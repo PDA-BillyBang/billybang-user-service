@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController implements DemoApi {
 
     @Override
-    public ResponseEntity<DemoResponseDto> demo(DemoRequestDto requestDto) {
+    public ResponseEntity<DemoResponseDto> demo1() {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<DemoResponseDto> demo2(DemoRequestDto requestDto) {
         return ResponseEntity.ok(null);
     }
 }

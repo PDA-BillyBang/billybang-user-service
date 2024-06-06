@@ -21,7 +21,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi demoOpenApi() { // application.yml 을 통해서도 설정 가능
-        String[] paths = {"/api/demo/**"};
+        String[] paths = {"/demo/**"};
 
         return GroupedOpenApi.builder()
                 .group("Demo API v1")
@@ -31,7 +31,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi userServiceOpenApi() {
-        String[] paths = {"/api/users/**"};
+        String[] paths = {"/users/**"};
 
         return GroupedOpenApi.builder()
                 .group("User Service API")
