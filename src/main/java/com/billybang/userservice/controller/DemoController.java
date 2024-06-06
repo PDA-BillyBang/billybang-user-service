@@ -1,8 +1,8 @@
 package com.billybang.userservice.controller;
 
 import com.billybang.userservice.api.DemoApi;
-import com.billybang.userservice.dto.request.DemoRequestDto;
-import com.billybang.userservice.dto.response.DemoResponseDto;
+import com.billybang.userservice.model.dto.request.DemoRequestDto;
+import com.billybang.userservice.model.dto.response.DemoResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

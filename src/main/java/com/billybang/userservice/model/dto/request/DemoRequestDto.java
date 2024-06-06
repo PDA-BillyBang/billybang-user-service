@@ -1,4 +1,4 @@
-package com.billybang.userservice.dto.request;
+package com.billybang.userservice.model.dto.request;
 
 import lombok.*;
 

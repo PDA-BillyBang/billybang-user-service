@@ -1,4 +1,4 @@
-package com.billybang.userservice.dto.response;
+package com.billybang.userservice.model.dto.response;
 
 import lombok.*;
 
