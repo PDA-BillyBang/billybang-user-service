@@ -1,6 +1,6 @@
 package com.billybang.userservice.model.entity;
 
-import com.billybang.userservice.model.dto.request.CreateUserRequestDto;
+import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.type.SignupType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,12 +31,12 @@ public class User {
     @Column(unique = true)
     private String nickname;
 
-    public static User create(CreateUserRequestDto dto) {
+    public static User create(User inputUser) {
         return User.builder()
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .birthDate(dto.getBirthDate())
-                .nickname(dto.getNickname())
+                .email(inputUser.getEmail())
+                .password(inputUser.getPassword())
+                .birthDate(inputUser.getBirthDate())
+                .nickname(inputUser.getNickname())
                 .build();
     }
 
