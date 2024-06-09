@@ -3,8 +3,10 @@ package com.billybang.userservice.controller;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.security.AuthConstant;
+import com.billybang.userservice.security.JWTConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,5 +75,28 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
                 .andExpect(jsonPath("$.refreshToken").exists());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("로그인 후에 쿠키에 access token 을 담아서 요청을 보내면 인증이 되어야 한다.")
+    void authenticationAfterLogin() throws Exception {
+        LoginRequestDto requestDto = LoginRequestDto.builder()
+                .email(AuthConstant.ADMIN_USER)
+                .password(AuthConstant.ADMIN_PWD)
+                .build();
+
+        String request = objectMapper.writeValueAsString(requestDto);
+
+        String accessToken = Objects.requireNonNull(
+                mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+                                .contentType("application/json")
+                                .content(request))
+                        .andExpect(status().isOk())
+                        .andReturn().getResponse().getCookie(JWTConstant.ACCESS_TOKEN)).getValue();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/test")
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN, accessToken)))
+                .andExpect(status().isOk());
     }
 }

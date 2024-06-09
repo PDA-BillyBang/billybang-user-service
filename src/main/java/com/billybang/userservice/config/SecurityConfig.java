@@ -12,21 +12,24 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] AUTH_WHITELIST = {
-            "/swagger-resources/**",
-            "/swagger-ui/**",
-            "/api-docs/**",
+    private static final AntPathRequestMatcher[] AUTH_WHITELIST = {
+            antMatcher("/swagger-resources/**"),
+            antMatcher("/swagger-ui/**"),
+            antMatcher("/**/api-docs/**"),
     };
 
     private final TokenFilter tokenFilter;
@@ -37,7 +40,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**/token", "/**/login", "/**/sign-up")
+                        .requestMatchers(
+                                antMatcher("/**/token"),
+                                antMatcher("/**/login"),
+                                antMatcher("/**/sign-up"))
                         .permitAll()
                         .requestMatchers(AUTH_WHITELIST)
                         .permitAll()

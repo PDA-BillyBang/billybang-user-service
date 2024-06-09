@@ -13,21 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         info = @Info(title = "BillyBang User Service API",
-                description = "BillyBang에서 개발 중인 유저 서비스 API 문서",
+                description = "BillyBang 에서 개발 중인 유저 서비스 API 문서",
                 version = "v1"))
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerConfig {
-
-    @Bean
-    public GroupedOpenApi demoOpenApi() { // application.yml 을 통해서도 설정 가능
-        String[] paths = {"/demo/**"};
-
-        return GroupedOpenApi.builder()
-                .group("Demo API v1")
-                .pathsToMatch(paths)
-                .build();
-    }
 
     @Bean
     public GroupedOpenApi userServiceOpenApi() {
@@ -42,14 +32,21 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI securityOpenApi() {
         final String DEBUG_MODE = "debug";
+        final String COOKIE = "cookie";
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement()
-                        .addList(DEBUG_MODE))
+                        .addList(DEBUG_MODE)
+                        .addList(COOKIE))
                 .components(new Components()
                         .addSecuritySchemes(DEBUG_MODE, new SecurityScheme()
-                                .name("Authorization")
+                                .name("debug mode")
                                 .type(SecurityScheme.Type.APIKEY)
                                 .in(SecurityScheme.In.HEADER)
-                                .description("API-KEY")));
+                                .description("API-KEY"))
+                        .addSecuritySchemes(COOKIE, new SecurityScheme()
+                                .name("JWT")
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.COOKIE))
+                );
     }
 }

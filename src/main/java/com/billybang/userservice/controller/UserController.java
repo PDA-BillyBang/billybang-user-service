@@ -13,8 +13,12 @@ import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.billybang.userservice.security.JWTConstant.*;
 
 @Slf4j
 @RestController
@@ -33,17 +37,34 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<TokenResponseDto> login(LoginRequestDto requestDto) {
+    public ResponseEntity login(LoginRequestDto requestDto) {
         try {
             User user = userService.login(requestDto);
+
+            String accessToken = tokenService.genAccessTokenByEmail(user.getEmail());
+            String refreshToken = tokenService.genRefreshTokenByEmail(user.getEmail());
+            ResponseCookie accessTokenCookie = createCookie(accessToken, ACCESS_TOKEN, ACCESS_TOKEN_MAX_AGE);
+            ResponseCookie refreshTokenCookie = createCookie(refreshToken, REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE);
+
             return ResponseEntity.ok()
-                    .body(TokenResponseDto.builder()
-                            .accessToken(tokenService.genAccessTokenByEmail(user.getEmail()))
-                            .refreshToken(tokenService.genRefreshTokenByEmail(user.getEmail()))
-                            .build());
+                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString(), refreshTokenCookie.toString())
+                    .build();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new CommonException(BError.FAIL, "Login");
         }
+    }
+
+    @Override
+    public ResponseEntity<String> test() {
+        return null;
+    }
+
+    private ResponseCookie createCookie(String token, String cookieName, long maxAge) {
+        return ResponseCookie.from(cookieName, token)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(maxAge)
+                .build();
     }
 }

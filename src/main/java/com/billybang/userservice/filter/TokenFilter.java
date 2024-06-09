@@ -1,11 +1,15 @@
 package com.billybang.userservice.filter;
 
+import com.billybang.userservice.exception.common.BError;
+import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.security.AuthConstant;
+import com.billybang.userservice.security.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
 import com.billybang.userservice.service.TokenService;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +22,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -34,10 +39,12 @@ public class TokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-            if (checkJWTToken(request, response)) { // JWT 토큰을 체크
-                Claims claims = tokenService.validateToken(
-                        request.getHeader(AuthConstant.AUTHORIZATION)
-                                .replace(AuthConstant.BEARER, ""));
+            if (checkJWTToken(request)) {
+                Cookie jwtCookie = Arrays.stream(request.getCookies())
+                        .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN))
+                        .findFirst()
+                        .orElse(null);
+                Claims claims = tokenService.validateToken(Objects.requireNonNull(jwtCookie).getValue());
 
                 if (tokenService.getUserCode(claims.getSubject()) == (int) claims.get("code")
                         && claims.get("authorities") != null) {
@@ -71,8 +78,15 @@ public class TokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
-    private boolean checkJWTToken(HttpServletRequest request, HttpServletResponse response) {
-        String authenticationHeader = request.getHeader(AuthConstant.AUTHORIZATION);
-        return authenticationHeader != null && authenticationHeader.startsWith(AuthConstant.BEARER);
+    private boolean checkJWTToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (Objects.isNull(cookies)) {
+            return false;
+        }
+
+        Optional<Cookie> jwtCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN))
+                .findFirst();
+        return jwtCookie.isPresent();
     }
 }

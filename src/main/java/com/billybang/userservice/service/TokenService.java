@@ -47,7 +47,7 @@ public class TokenService {
                 .claim("authorities", grantedAuthorities.stream().map(GrantedAuthority::getAuthority).toList())
                 .claim("code", USER_CODE.get(email))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWTConstant.ACCESS_TOKEN_EXPIRED))
+                .setExpiration(new Date(System.currentTimeMillis() + JWTConstant.ACCESS_TOKEN_MAX_AGE))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes()).compact();
     }
 
@@ -57,7 +57,7 @@ public class TokenService {
                 .setSubject(email)
                 .setIssuer("BILLYBANG_ADMIN")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWTConstant.REFRESH_TOKEN_EXPIRED))
+                .setExpiration(new Date(System.currentTimeMillis() + JWTConstant.REFRESH_TOKEN_MAX_AGE))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes()).compact();
     }
 
