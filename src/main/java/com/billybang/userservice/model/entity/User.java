@@ -1,11 +1,12 @@
 package com.billybang.userservice.model.entity;
 
-import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.type.SignupType;
+import com.billybang.userservice.model.vo.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseTime {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

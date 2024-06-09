@@ -2,12 +2,13 @@ package com.billybang.userservice.model.dto.request;
 
 import lombok.*;
 
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class DemoRequestDto {
+public class LoginRequestDto {
 
-    private Long demoProperty1;
+    private String email;
+    private String password;
 }

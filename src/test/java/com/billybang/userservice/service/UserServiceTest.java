@@ -25,7 +25,7 @@ class UserServiceTest {
                 .nickname("billy")
                 .build();
 
-        User user = userService.signup(dto);
+        User user = userService.signUp(dto);
 
         assertThat(user.getEmail()).isEqualTo(dto.getEmail());
         assertThat(user.getNickname()).isEqualTo(dto.getNickname());

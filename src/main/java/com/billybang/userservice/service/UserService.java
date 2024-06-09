@@ -24,7 +24,7 @@ public class UserService {
     }
 
     @Transactional
-    public User signup(SignUpRequestDto dto) {
+    public User signUp(SignUpRequestDto dto) {
         try {
             if (userRepository.existsByEmail(dto.getEmail())) {
                 throw new RuntimeException("User Already Exist");
