@@ -38,7 +38,16 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/login")
-    ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto);
+    ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto);
+
+    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PostMapping("/logout")
+    ResponseEntity<?> logout();
 
     @Operation(summary = "테스트", description = "")
     @ApiResponses(value = {

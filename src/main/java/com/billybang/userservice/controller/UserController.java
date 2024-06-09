@@ -5,7 +5,6 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.response.TokenResponseDto;
 import com.billybang.userservice.model.dto.response.UserResponseDto;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.mapper.UserMapper;
@@ -37,7 +36,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity login(LoginRequestDto requestDto) {
+    public ResponseEntity<?> login(LoginRequestDto requestDto) {
         try {
             User user = userService.login(requestDto);
 
@@ -53,6 +52,11 @@ public class UserController implements UserApi {
             log.error(e.getMessage(), e);
             throw new CommonException(BError.FAIL, "Login");
         }
+    }
+
+    @Override
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.noContent().build();
     }
 
     @Override

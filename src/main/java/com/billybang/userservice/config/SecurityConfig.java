@@ -2,6 +2,9 @@ package com.billybang.userservice.config;
 
 import com.billybang.userservice.filter.TokenFilter;
 import com.billybang.userservice.security.AuthenticationExceptionHandler;
+import com.billybang.userservice.security.JWTConstant;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -47,7 +51,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(AUTH_WHITELIST)
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/exception/**")
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/exception/**"))
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -56,6 +60,10 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessHandler(this::onLogoutSuccess)
+                        .deleteCookies(JWTConstant.ACCESS_TOKEN, JWTConstant.REFRESH_TOKEN))
                 .build();
     }
 
@@ -69,5 +77,11 @@ public class SecurityConfig {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void onLogoutSuccess(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 Authentication authentication) {
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 }
