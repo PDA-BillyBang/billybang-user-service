@@ -1,6 +1,8 @@
 package com.billybang.userservice.api;
 
+import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.response.TokenResponseDto;
 import com.billybang.userservice.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,4 +25,13 @@ public interface UserApi {
     })
     @PostMapping("/sign-up")
     ResponseEntity<UserResponseDto> signUp(@RequestBody SignUpRequestDto requestDto);
+
+    @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인을 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PostMapping("/login")
+    ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto);
 }

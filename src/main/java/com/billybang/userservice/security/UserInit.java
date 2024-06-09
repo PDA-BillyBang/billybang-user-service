@@ -22,13 +22,12 @@ public class UserInit {
 
     private final UserService userService;
     private final TokenService tokenService;
-    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
         SignUpRequestDto dto = SignUpRequestDto.builder()
                 .email(AuthConstant.ADMIN_USER)
-                .password(passwordEncoder.encode(AuthConstant.ADMIN_PWD))
+                .password(AuthConstant.ADMIN_PWD)
                 .nickname("admin")
                 .build();
 
