@@ -3,7 +3,7 @@ package com.billybang.userservice.controller;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.security.AuthConstant;
-import com.billybang.userservice.security.JWTConstant;
+import com.billybang.userservice.security.jwt.JWTConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.Cookie;

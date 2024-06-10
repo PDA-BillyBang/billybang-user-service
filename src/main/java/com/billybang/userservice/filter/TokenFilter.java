@@ -1,9 +1,7 @@
 package com.billybang.userservice.filter;
 
-import com.billybang.userservice.exception.common.BError;
-import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.security.AuthConstant;
-import com.billybang.userservice.security.JWTConstant;
+import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
 import com.billybang.userservice.service.TokenService;
 import io.jsonwebtoken.*;
@@ -37,7 +35,6 @@ public class TokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         try {
             if (checkJWTToken(request)) {
                 Cookie jwtCookie = Arrays.stream(request.getCookies())

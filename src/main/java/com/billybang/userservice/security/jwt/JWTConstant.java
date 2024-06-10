@@ -1,4 +1,4 @@
-package com.billybang.userservice.security;
+package com.billybang.userservice.security.jwt;
 
 public class JWTConstant {
 	public static final String ACCESS_TOKEN = "access_token";

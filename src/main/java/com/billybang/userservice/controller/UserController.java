@@ -17,7 +17,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.billybang.userservice.security.JWTConstant.*;
+import static com.billybang.userservice.security.jwt.JWTConstant.*;
 
 @Slf4j
 @RestController

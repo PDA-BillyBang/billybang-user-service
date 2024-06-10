@@ -1,11 +1,12 @@
 package com.billybang.userservice.config;
 
 import com.billybang.userservice.filter.TokenFilter;
-import com.billybang.userservice.security.AuthenticationExceptionHandler;
-import com.billybang.userservice.security.JWTConstant;
-import jakarta.servlet.http.HttpServletRequest;
+import com.billybang.userservice.security.exception.AuthenticationExceptionHandler;
+import com.billybang.userservice.service.TokenService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,9 +14,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -23,8 +28,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static com.billybang.userservice.security.jwt.JWTConstant.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,9 +41,14 @@ public class SecurityConfig {
             antMatcher("/swagger-resources/**"),
             antMatcher("/swagger-ui/**"),
             antMatcher("/**/api-docs/**"),
+            antMatcher("/index.html"),
+            antMatcher("/error"),
+            antMatcher("/favicon.ico")
     };
 
     private final TokenFilter tokenFilter;
+    private final TokenService tokenService;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuthService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 antMatcher("/**/token"),
                                 antMatcher("/**/login"),
-                                antMatcher("/**/sign-up"))
+                                antMatcher("/**/sign-up"),
+                                antMatcher("/**/oauth/**"))
                         .permitAll()
                         .requestMatchers(AUTH_WHITELIST)
                         .permitAll()
@@ -60,10 +73,15 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuthService))
+                        .successHandler(onOAuth2LoginSuccess())
+                )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
-                        .logoutSuccessHandler(this::onLogoutSuccess)
-                        .deleteCookies(JWTConstant.ACCESS_TOKEN, JWTConstant.REFRESH_TOKEN))
+                        .logoutSuccessHandler(onLogoutSuccess())
+                        .deleteCookies(ACCESS_TOKEN, REFRESH_TOKEN))
                 .build();
     }
 
@@ -79,9 +97,30 @@ public class SecurityConfig {
         return source;
     }
 
-    private void onLogoutSuccess(HttpServletRequest request,
-                                 HttpServletResponse response,
-                                 Authentication authentication) {
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    @Bean
+    public AuthenticationSuccessHandler onOAuth2LoginSuccess() {
+        return (request, response, authentication) -> {
+            OAuth2User principal = (OAuth2User) authentication.getPrincipal();
+
+            String accessToken = tokenService.genAccessTokenByEmail(principal.getAttribute("email"));
+            String refreshToken = tokenService.genRefreshTokenByEmail(principal.getAttribute("email"));
+
+            response.addCookie(createCookie(accessToken, ACCESS_TOKEN, ACCESS_TOKEN_MAX_AGE));
+            response.addCookie(createCookie(refreshToken, REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE));
+        };
+    }
+
+    private LogoutSuccessHandler onLogoutSuccess() {
+        return (request, response, authentication) -> {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        };
+    }
+
+    private Cookie createCookie(String token, String cookieName, long maxAge) {
+        Cookie cookie = new Cookie(cookieName, token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) maxAge);
+        return cookie;
     }
 }

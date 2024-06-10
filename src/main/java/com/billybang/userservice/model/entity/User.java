@@ -41,4 +41,11 @@ public class User extends BaseTime {
                 .build();
     }
 
+    // TODO: Implement update method
+    public User update(String email, String nickname) {
+        this.email = email;
+        this.nickname = nickname;
+        return this;
+    }
+
 }

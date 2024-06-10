@@ -1,4 +1,4 @@
-package com.billybang.userservice.security;
+package com.billybang.userservice.security.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

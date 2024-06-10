@@ -1,4 +1,4 @@
-package com.billybang.userservice.security;
+package com.billybang.userservice.security.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

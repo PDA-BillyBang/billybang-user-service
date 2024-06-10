@@ -1,7 +1,7 @@
 package com.billybang.userservice.service;
 
 import com.billybang.userservice.model.entity.User;
-import com.billybang.userservice.security.JWTConstant;
+import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
