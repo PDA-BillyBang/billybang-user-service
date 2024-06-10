@@ -1,12 +1,11 @@
 package com.billybang.userservice.model.entity;
 
-import com.billybang.userservice.model.type.SignupType;
+import com.billybang.userservice.model.type.SignUpType;
 import com.billybang.userservice.model.vo.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -20,9 +19,10 @@ public class User extends BaseTime {
     @Column(name = "user_id")
     private Long id;
 
-    private SignupType signupType;
+    @Enumerated(EnumType.STRING)
+    private SignUpType signUpType;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
@@ -31,15 +31,6 @@ public class User extends BaseTime {
 
     @Column(unique = true)
     private String nickname;
-
-    public static User create(User inputUser) {
-        return User.builder()
-                .email(inputUser.getEmail())
-                .password(inputUser.getPassword())
-                .birthDate(inputUser.getBirthDate())
-                .nickname(inputUser.getNickname())
-                .build();
-    }
 
     // TODO: Implement update method
     public User update(String email, String nickname) {

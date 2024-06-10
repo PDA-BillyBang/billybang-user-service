@@ -25,20 +25,20 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUser(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "User"));
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
     }
 
     @Transactional
     public User signUp(SignUpRequestDto dto) {
         try {
             if (userRepository.existsByEmail(dto.getEmail())) {
-                throw new CommonException(BError.EXIST, "Email");
+                throw new CommonException(BError.EXIST, "email");
             }
             return userRepository.save(setUser(dto));
         } catch (Exception e) {
             log.error(e.getMessage());
             log.debug(e.getMessage(), e);
-            throw new CommonException(BError.FAIL, "Sign Up");
+            throw new CommonException(BError.FAIL, "sign up");
         }
     }
 
@@ -46,7 +46,7 @@ public class UserService {
     public User login(LoginRequestDto dto) {
         User user = getUser(dto.getEmail());
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new CommonException(BError.NOT_MATCH, "Password");
+            throw new CommonException(BError.NOT_MATCH, "password");
         }
         return user;
     }
@@ -55,8 +55,8 @@ public class UserService {
     protected User setUser(SignUpRequestDto dto) {
 
         if (userRepository.existsByNickname(dto.getNickname())) {
-            throw new CommonException(BError.EXIST, "Nickname");
+            throw new CommonException(BError.EXIST, "nickname");
         }
-        return User.create(userMapper.toEntity(dto));
+        return userMapper.toEntity(dto);
     }
 }

@@ -28,41 +28,44 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest); // OAuth 서비스(kakao, google, naver)에서 가져온 유저 정보를 담고있음
+        OAuth2User oAuth2User = delegate.loadUser(userRequest); // OAuth 서비스(kakao)에서 가져온 유저 정보를 담고 있음
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // OAuth 서비스 이름(ex. kakao, naver, google)
+        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // OAuth 서비스 이름(eg. kakao)
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails()
                 .getUserInfoEndpoint()
-                .getUserNameAttributeName(); // OAuth 로그인 시 키(pk)가 되는 값
+                .getUserNameAttributeName(); // OAuth 로그인 시 키(pk)가 되는 값 (kakao 의 경우 "id"이고, 회원번호에 해당함)
         Map<String, Object> attributes = oAuth2User.getAttributes(); // OAuth 서비스의 유저 정보들
 
-        OAuthUserProfile userProfile = OAuthAttributes.extract(registrationId, attributes); // registrationId에 따라 유저 정보를 통해 공통된 UserProfile 객체로 만들어 줌
+        // registrationId 에 따라 유저 정보를 통해 UserProfile 객체로 만들어 줌
+        OAuthUserProfile userProfile = OAuthAttributes.extract(registrationId, attributes);
         User user = saveOrUpdate(userProfile);
 
-        Map<String, Object> customAttribute = customAttribute(attributes, userNameAttributeName, userProfile);
+        Map<String, Object> customAttributes = customAttributes(attributes, userNameAttributeName, userProfile);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(UserRoleType.ROLE_CUSTOMER.name())),
-                customAttribute,
+                customAttributes,
                 userNameAttributeName);
 
     }
 
-    private Map<String, Object> customAttribute(Map<String, Object> attributes, String userNameAttributeName, OAuthUserProfile userProfile) {
-        Map<String, Object> customAttribute = new LinkedHashMap<>();
-        customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
-        customAttribute.put("email", userProfile.getEmail());
-        customAttribute.put("nickname", userProfile.getNickname());
-        return customAttribute;
+    private Map<String, Object> customAttributes(Map<String, Object> attributes,
+                                                 String userNameAttributeName,
+                                                 OAuthUserProfile userProfile) {
+        Map<String, Object> customAttributes = new LinkedHashMap<>();
+        customAttributes.put(userNameAttributeName, attributes.get(userNameAttributeName));
+        customAttributes.put("email", userProfile.getEmail());
+        customAttributes.put("nickname", userProfile.getNickname());
+        return customAttributes;
 
     }
 
     private User saveOrUpdate(OAuthUserProfile userProfile) {
 
         User user = userRepository.findByEmail(userProfile.getEmail())
-                .map(u -> u.update(userProfile.getEmail(), userProfile.getNickname())) // OAuth 서비스 사이트에서 유저 정보 변경이 있을 수 있기 때문에 우리 DB에도 update
-                .orElse(userProfile.toUser());
+                .map(u -> u.update(userProfile.getEmail(), userProfile.getNickname())) // OAuth provider 에서 유저 정보 변경이 있을 수 있음
+                .orElse(userProfile.toUserEntity());
 
         return userRepository.save(user);
     }

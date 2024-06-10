@@ -3,6 +3,7 @@ package com.billybang.userservice.service;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.entity.User;
+import com.billybang.userservice.model.type.SignUpType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ class UserServiceTest {
 
         assertThat(user.getEmail()).isEqualTo(dto.getEmail());
         assertThat(user.getNickname()).isEqualTo(dto.getNickname());
+        assertThat(user.getSignUpType().name()).isEqualTo(SignUpType.BILLYBANG.name());
     }
 
     @Test
@@ -55,4 +57,5 @@ class UserServiceTest {
 
         assertThat(user.getEmail()).isEqualTo(loginRequestDto.getEmail());
     }
+
 }

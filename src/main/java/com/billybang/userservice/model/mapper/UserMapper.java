@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public interface UserMapper {
 
     @Mapping(source = "password", target = "password", qualifiedByName = {"EncodePassword"})
+    @Mapping(source = "signUpType", target = "signUpType", qualifiedByName = {"AssignSignUpType"})
     User toEntity(SignUpRequestDto dto);
 
     UserResponseDto toDto(User entity);
