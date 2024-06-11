@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -75,8 +74,8 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.refreshToken").exists());
+                .andExpect(cookie().exists(JWTConstant.ACCESS_TOKEN))
+                .andExpect(cookie().exists(JWTConstant.REFRESH_TOKEN));
     }
 
     @Test
@@ -103,6 +102,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("로그아웃 API 테스트")
     void logout() throws Exception {
         LoginRequestDto requestDto = LoginRequestDto.builder()
