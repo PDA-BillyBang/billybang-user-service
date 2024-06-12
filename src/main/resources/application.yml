@@ -1,0 +1,28 @@
+server:
+  port: 3000
+
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: local
+    include:
+      - datasource
+      - cloud
+      - logging
+      - security
+  config:
+    import: optional:configserver:http://3.39.52.110:8888
+  cloud:
+    config:
+      name: user-service
+  rabbitmq:
+    host: 3.39.52.110
+    port: 5672
+    username: guest
+    password: guest
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh

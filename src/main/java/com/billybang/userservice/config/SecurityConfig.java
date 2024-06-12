@@ -43,7 +43,8 @@ public class SecurityConfig {
             antMatcher("/**/api-docs/**"),
             antMatcher("/index.html"),
             antMatcher("/error"),
-            antMatcher("/favicon.ico")
+            antMatcher("/favicon.ico"),
+            antMatcher("/actuator/**")
     };
 
     private final TokenFilter tokenFilter;
