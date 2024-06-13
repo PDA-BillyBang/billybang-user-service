@@ -12,15 +12,11 @@ spring:
       - logging
       - security
   config:
-    import: optional:configserver:http://3.39.52.110:8888
+    import: [optional:configserver:http://3.39.52.110:8888]
   cloud:
     config:
       name: user-service
-  rabbitmq:
-    host: 3.39.52.110
-    port: 5672
-    username: guest
-    password: guest
+
 management:
   endpoints:
     web:
