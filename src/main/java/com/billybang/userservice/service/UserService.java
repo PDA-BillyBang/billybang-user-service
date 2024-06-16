@@ -12,9 +12,12 @@ import com.billybang.userservice.repository.UserInfoRepository;
 import com.billybang.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,6 +40,13 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
+    }
+
+    @Transactional
+    public Long getLoginUserId() {
+        String userEmail = Optional.ofNullable((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .orElseThrow(() -> new CommonException(BError.NOT_VALID, "user"));
+        return getUserByEmail(userEmail).getId();
     }
 
     @Transactional

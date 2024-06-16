@@ -70,14 +70,14 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ApiResult<UserResponseDto>> getUser(Long userId) {
-        User user = userService.getUserById(userId);
+    public ResponseEntity<ApiResult<UserResponseDto>> getUser() {
+        User user = userService.getUserById(userService.getLoginUserId());
         return ResponseEntity.ok(ApiUtils.success(userMapper.toUserResponseDto(user)));
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> update(Long userId, UpdateUserRequestDto requestDto) {
-        userService.updateUser(userId, requestDto);
+    public ResponseEntity<ApiResult<?>> update(UpdateUserRequestDto requestDto) {
+        userService.updateUser(userService.getLoginUserId(), requestDto);
         return ResponseEntity.ok(ApiUtils.success(null));
     }
 

@@ -54,8 +54,8 @@ public interface UserApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @GetMapping("/{userId}")
-    ResponseEntity<ApiResult<UserResponseDto>> getUser(@PathVariable Long userId);
+    @GetMapping("/user-info")
+    ResponseEntity<ApiResult<UserResponseDto>> getUser();
 
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @ApiResponses(value = {
@@ -63,8 +63,8 @@ public interface UserApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @PutMapping("/{userId}")
-    ResponseEntity<ApiResult<?>> update(@PathVariable Long userId, @RequestBody UpdateUserRequestDto requestDto);
+    @PutMapping("/user-info")
+    ResponseEntity<ApiResult<?>> update(@RequestBody UpdateUserRequestDto requestDto);
 
     @Operation(summary = "테스트", description = "")
     @ApiResponses(value = {
