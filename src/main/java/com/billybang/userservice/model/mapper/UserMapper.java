@@ -19,5 +19,6 @@ public interface UserMapper {
     @Mapping(source = "signUpType", target = "signUpType", qualifiedByName = {"AssignSignUpType"})
     User toEntity(SignUpRequestDto dto);
 
+    @Mapping(source = "userInfo", target = "userInfo", qualifiedByName = {"ToUserInfoResponseDto"})
     UserResponseDto toDto(User entity);
 }

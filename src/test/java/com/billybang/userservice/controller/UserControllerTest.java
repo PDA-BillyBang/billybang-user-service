@@ -2,6 +2,9 @@ package com.billybang.userservice.controller;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
+import com.billybang.userservice.model.type.CompanySize;
+import com.billybang.userservice.model.type.Occupation;
 import com.billybang.userservice.security.AuthConstant;
 import com.billybang.userservice.security.jwt.JWTConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
@@ -42,21 +46,37 @@ class UserControllerTest {
     @Transactional
     @DisplayName("회원가입 API 테스트")
     void signUp() throws Exception {
-        SignUpRequestDto requestDto = SignUpRequestDto.builder()
+        UserInfoRequestDto userInfoRequestDto = UserInfoRequestDto.builder()
+                .occupation(Occupation.GENERAL)
+                .companySize(CompanySize.LARGE)
+                .employmentDuration(24)
+                .individualIncome(3000)
+                .totalMarriedIncome(5000)
+                .childrenCount(1)
+                .isForeign(false)
+                .isFirstHouseBuyer(true)
+                .isMarried(true)
+                .isNewlyMarried(true)
+                .hasOtherLoans(false)
+                .build();
+
+        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .email("test1234@test.com")
                 .password("test1234")
                 .nickname("test")
                 .birthDate(LocalDate.of(2000, 1, 1))
+                .userInfo(userInfoRequestDto)
                 .build();
 
-        String request = objectMapper.writeValueAsString(requestDto);
+        String request = objectMapper.writeValueAsString(signUpRequestDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/sign-up")
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(requestDto.getEmail()))
-                .andExpect(jsonPath("$.nickname").value(requestDto.getNickname()));
+                .andDo(print())
+                .andExpect(jsonPath("$.response.email").value(signUpRequestDto.getEmail()))
+                .andExpect(jsonPath("$.response.nickname").value(signUpRequestDto.getNickname()));
     }
 
     @Test

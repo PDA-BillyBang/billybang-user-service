@@ -14,4 +14,5 @@ public class UserResponseDto {
     private String email;
     private LocalDate birthDate;
     private String nickname;
+    private UserInfoResponseDto userInfo;
 }

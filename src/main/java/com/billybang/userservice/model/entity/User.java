@@ -32,6 +32,14 @@ public class User extends BaseTime {
     @Column(unique = true)
     private String nickname;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private UserInfo userInfo;
+
+    public void addUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+        userInfo.setUser(this);
+    }
+
     // TODO: Implement update method
     public User update(String email, String nickname) {
         this.email = email;

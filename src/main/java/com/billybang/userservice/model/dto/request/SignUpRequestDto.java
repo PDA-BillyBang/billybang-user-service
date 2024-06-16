@@ -17,4 +17,5 @@ public class SignUpRequestDto {
     private String password;
     private LocalDate birthDate;
     private String nickname;
+    private UserInfoRequestDto userInfo;
 }
