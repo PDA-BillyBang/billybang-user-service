@@ -1,5 +1,7 @@
 package com.billybang.userservice.controller;
 
+import com.billybang.userservice.api.ApiResult;
+import com.billybang.userservice.api.ApiUtils;
 import com.billybang.userservice.api.UserApi;
 import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
@@ -29,10 +31,10 @@ public class UserController implements UserApi {
     private final UserMapper userMapper;
 
     @Override
-    public ResponseEntity<UserResponseDto> signUp(SignUpRequestDto requestDto) {
+    public ResponseEntity<ApiResult<UserResponseDto>> signUp(SignUpRequestDto requestDto) {
         User user = userService.signUp(requestDto);
         return ResponseEntity.created(null)
-                .body(userMapper.toDto(user));
+                .body(ApiUtils.success(userMapper.toDto(user)));
     }
 
     @Override
@@ -50,7 +52,7 @@ public class UserController implements UserApi {
                     .build();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new CommonException(BError.FAIL, "Login");
+            throw new CommonException(BError.FAIL, "login");
         }
     }
 

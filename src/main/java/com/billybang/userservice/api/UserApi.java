@@ -25,7 +25,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/sign-up")
-    ResponseEntity<UserResponseDto> signUp(@RequestBody SignUpRequestDto requestDto);
+    ResponseEntity<ApiResult<UserResponseDto>> signUp(@RequestBody SignUpRequestDto requestDto);
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인을 합니다.")
     @ApiResponses(value = {
