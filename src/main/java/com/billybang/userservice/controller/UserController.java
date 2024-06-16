@@ -7,6 +7,7 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.response.LoginResponseDto;
 import com.billybang.userservice.model.dto.response.SignUpResponseDto;
 import com.billybang.userservice.model.entity.User;
@@ -65,6 +66,12 @@ public class UserController implements UserApi {
     @Override
     public ResponseEntity<?> logout() {
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<?>> update(Long userId, UpdateUserRequestDto requestDto) {
+        userService.updateUser(userId, requestDto);
+        return ResponseEntity.ok(ApiUtils.success(null));
     }
 
     @Override

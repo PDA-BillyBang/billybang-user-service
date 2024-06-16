@@ -23,6 +23,5 @@ public interface UserMapper {
     @Mapping(source = "userInfo", target = "userInfo", qualifiedByName = {"ToUserInfoResponseDto"})
     SignUpResponseDto toSignUpResponseDto(User entity);
 
-    @Mapping(source = "id", target = "userId")
     LoginResponseDto toLoginResponseDto(User entity);
 }

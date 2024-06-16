@@ -4,6 +4,7 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.mapper.UserInfoMapper;
 import com.billybang.userservice.model.mapper.UserMapper;
@@ -55,6 +56,16 @@ public class UserService {
             throw new CommonException(BError.NOT_MATCH, "password");
         }
         return user;
+    }
+
+    @Transactional
+    public void updateUser(Long userId, UpdateUserRequestDto dto) {
+        userRepository.findById(userId)
+                .map(user -> {
+                    user.update(dto);
+                    return user;
+                })
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
     }
 
     @Transactional

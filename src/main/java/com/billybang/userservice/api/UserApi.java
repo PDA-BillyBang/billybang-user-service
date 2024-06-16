@@ -2,6 +2,7 @@ package com.billybang.userservice.api;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.response.LoginResponseDto;
 import com.billybang.userservice.model.dto.response.SignUpResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User API", description = "유저 API")
 @RequestMapping("/users")
@@ -48,6 +46,15 @@ public interface UserApi {
     })
     @PostMapping("/logout")
     ResponseEntity<?> logout();
+
+    @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PutMapping("/{userId}")
+    ResponseEntity<ApiResult<?>> update(@PathVariable Long userId, @RequestBody UpdateUserRequestDto requestDto);
 
     @Operation(summary = "테스트", description = "")
     @ApiResponses(value = {

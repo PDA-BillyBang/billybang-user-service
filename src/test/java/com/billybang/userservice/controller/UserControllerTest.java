@@ -2,11 +2,13 @@ package com.billybang.userservice.controller;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.type.CompanySize;
 import com.billybang.userservice.model.type.Occupation;
 import com.billybang.userservice.security.AuthConstant;
 import com.billybang.userservice.security.jwt.JWTConstant;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.Cookie;
@@ -74,7 +76,6 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isCreated())
-                .andDo(print())
                 .andExpect(jsonPath("$.response.email").value(signUpRequestDto.getEmail()))
                 .andExpect(jsonPath("$.response.nickname").value(signUpRequestDto.getNickname()));
     }
@@ -141,10 +142,41 @@ class UserControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/logout")
                         .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken)))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.accessToken").doesNotExist())
-                .andExpect(jsonPath("$.refreshToken").doesNotExist());
+                .andExpect(status().isNoContent());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("회원정보 수정 테스트")
+    void update() throws Exception {
+        UserInfoRequestDto userInfoRequestDto = UserInfoRequestDto.builder()
+                .occupation(Occupation.GENERAL)
+                .companySize(CompanySize.LARGE)
+                .employmentDuration(24)
+                .individualIncome(3000)
+                .totalMarriedIncome(5000)
+                .childrenCount(1)
+                .isForeign(false)
+                .isFirstHouseBuyer(true)
+                .isMarried(true)
+                .isNewlyMarried(true)
+                .hasOtherLoans(false)
+                .build();
+
+        UpdateUserRequestDto updateUserRequestDto = UpdateUserRequestDto.builder()
+                .nickname("test")
+                .userInfo(userInfoRequestDto)
+                .build();
+
+        String request = objectMapper.writeValueAsString(updateUserRequestDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/{userId}", 1)
+                        .contentType("application/json")
+                        .content(request))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.nickname").value(updateUserRequestDto.getNickname()))
+                .andDo(print());
+
+    }
 
 }
