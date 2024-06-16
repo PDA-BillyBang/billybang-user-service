@@ -2,7 +2,8 @@ package com.billybang.userservice.api;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.response.UserResponseDto;
+import com.billybang.userservice.model.dto.response.LoginResponseDto;
+import com.billybang.userservice.model.dto.response.SignUpResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +26,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/sign-up")
-    ResponseEntity<ApiResult<UserResponseDto>> signUp(@RequestBody SignUpRequestDto requestDto);
+    ResponseEntity<ApiResult<SignUpResponseDto>> signUp(@RequestBody SignUpRequestDto requestDto);
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인을 합니다.")
     @ApiResponses(value = {
@@ -37,7 +38,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/login")
-    ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto);
+    ResponseEntity<ApiResult<LoginResponseDto>> login(@RequestBody LoginRequestDto requestDto);
 
     @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     @ApiResponses(value = {

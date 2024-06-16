@@ -1,7 +1,8 @@
 package com.billybang.userservice.model.mapper;
 
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.response.UserResponseDto;
+import com.billybang.userservice.model.dto.response.LoginResponseDto;
+import com.billybang.userservice.model.dto.response.SignUpResponseDto;
 import com.billybang.userservice.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,5 +21,8 @@ public interface UserMapper {
     User toEntity(SignUpRequestDto dto);
 
     @Mapping(source = "userInfo", target = "userInfo", qualifiedByName = {"ToUserInfoResponseDto"})
-    UserResponseDto toDto(User entity);
+    SignUpResponseDto toSignUpResponseDto(User entity);
+
+    @Mapping(source = "id", target = "userId")
+    LoginResponseDto toLoginResponseDto(User entity);
 }

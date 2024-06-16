@@ -7,7 +7,8 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.response.UserResponseDto;
+import com.billybang.userservice.model.dto.response.LoginResponseDto;
+import com.billybang.userservice.model.dto.response.SignUpResponseDto;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.mapper.UserMapper;
 import com.billybang.userservice.service.TokenService;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.billybang.userservice.security.AuthConstant.USER_ID;
 import static com.billybang.userservice.security.jwt.JWTConstant.*;
 
 @Slf4j
@@ -31,25 +33,29 @@ public class UserController implements UserApi {
     private final UserMapper userMapper;
 
     @Override
-    public ResponseEntity<ApiResult<UserResponseDto>> signUp(SignUpRequestDto requestDto) {
+    public ResponseEntity<ApiResult<SignUpResponseDto>> signUp(SignUpRequestDto requestDto) {
         User user = userService.signUp(requestDto);
         return ResponseEntity.created(null)
-                .body(ApiUtils.success(userMapper.toDto(user)));
+                .body(ApiUtils.success(userMapper.toSignUpResponseDto(user)));
     }
 
     @Override
-    public ResponseEntity<?> login(LoginRequestDto requestDto) {
+    public ResponseEntity<ApiResult<LoginResponseDto>> login(LoginRequestDto requestDto) {
         try {
             User user = userService.login(requestDto);
 
             String accessToken = tokenService.genAccessTokenByEmail(user.getEmail());
             String refreshToken = tokenService.genRefreshTokenByEmail(user.getEmail());
-            ResponseCookie accessTokenCookie = createCookie(accessToken, ACCESS_TOKEN, ACCESS_TOKEN_MAX_AGE);
-            ResponseCookie refreshTokenCookie = createCookie(refreshToken, REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE);
+            ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE);
+            ResponseCookie refreshTokenCookie = createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE);
+            ResponseCookie userIdTokenCookie = createCookie(USER_ID, String.valueOf(user.getId()), ACCESS_TOKEN_MAX_AGE);
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString(), refreshTokenCookie.toString())
-                    .build();
+                    .header(HttpHeaders.SET_COOKIE,
+                            accessTokenCookie.toString(),
+                            refreshTokenCookie.toString(),
+                            userIdTokenCookie.toString())
+                    .body(ApiUtils.success(userMapper.toLoginResponseDto(user)));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new CommonException(BError.FAIL, "login");
@@ -66,8 +72,8 @@ public class UserController implements UserApi {
         return null;
     }
 
-    private ResponseCookie createCookie(String token, String cookieName, long maxAge) {
-        return ResponseCookie.from(cookieName, token)
+    private ResponseCookie createCookie(String cookieName, String cookieValue, long maxAge) {
+        return ResponseCookie.from(cookieName, cookieValue)
                 .httpOnly(true)
                 .path("/")
                 .maxAge(maxAge)

@@ -94,8 +94,8 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isOk())
-                .andExpect(cookie().exists(JWTConstant.ACCESS_TOKEN))
-                .andExpect(cookie().exists(JWTConstant.REFRESH_TOKEN));
+                .andExpect(cookie().exists(JWTConstant.ACCESS_TOKEN_NAME))
+                .andExpect(cookie().exists(JWTConstant.REFRESH_TOKEN_NAME));
     }
 
     @Test
@@ -114,10 +114,10 @@ class UserControllerTest {
                                 .contentType("application/json")
                                 .content(request))
                         .andExpect(status().isOk())
-                        .andReturn().getResponse().getCookie(JWTConstant.ACCESS_TOKEN)).getValue();
+                        .andReturn().getResponse().getCookie(JWTConstant.ACCESS_TOKEN_NAME)).getValue();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/test")
-                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN, accessToken)))
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken)))
                 .andExpect(status().isOk());
     }
 
@@ -137,10 +137,10 @@ class UserControllerTest {
                                 .contentType("application/json")
                                 .content(request))
                         .andExpect(status().isOk())
-                        .andReturn().getResponse().getCookie(JWTConstant.ACCESS_TOKEN)).getValue();
+                        .andReturn().getResponse().getCookie(JWTConstant.ACCESS_TOKEN_NAME)).getValue();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/logout")
-                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN, accessToken)))
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken)))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.accessToken").doesNotExist())
                 .andExpect(jsonPath("$.refreshToken").doesNotExist());

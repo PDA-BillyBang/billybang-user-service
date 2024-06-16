@@ -38,7 +38,7 @@ public class TokenFilter extends OncePerRequestFilter {
         try {
             if (checkJWTToken(request)) {
                 Cookie jwtCookie = Arrays.stream(request.getCookies())
-                        .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN))
+                        .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN_NAME))
                         .findFirst()
                         .orElse(null);
                 Claims claims = tokenService.validateToken(Objects.requireNonNull(jwtCookie).getValue());
@@ -82,7 +82,7 @@ public class TokenFilter extends OncePerRequestFilter {
         }
 
         Optional<Cookie> jwtCookie = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN))
+                .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN_NAME))
                 .findFirst();
         return jwtCookie.isPresent();
     }
