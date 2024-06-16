@@ -35,7 +35,7 @@ public class TokenService {
     }
 
     public String genAccessTokenByEmail(String email) {
-        User user = userService.getUser(email);
+        User user = userService.getUserByEmail(email);
         setUserCode(email, user.getUpdatedAt());
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList(UserRoleType.ROLE_CUSTOMER.name());

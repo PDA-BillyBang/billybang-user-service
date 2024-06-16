@@ -5,6 +5,7 @@ import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.response.LoginResponseDto;
 import com.billybang.userservice.model.dto.response.SignUpResponseDto;
+import com.billybang.userservice.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,6 +47,15 @@ public interface UserApi {
     })
     @PostMapping("/logout")
     ResponseEntity<?> logout();
+
+    @Operation(summary = "회원정보 조회", description = "회원정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/{userId}")
+    ResponseEntity<ApiResult<UserResponseDto>> getUser(@PathVariable Long userId);
 
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @ApiResponses(value = {

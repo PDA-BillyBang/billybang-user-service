@@ -86,7 +86,7 @@ class UserServiceTest {
                 .build();
 
         userService.updateUser(1L, updateUserRequestDto);
-        User user = userService.getUser(ADMIN_USER);
+        User user = userService.getUserByEmail(ADMIN_USER);
 
         assertThat(user.getNickname()).isEqualTo(updateUserRequestDto.getNickname());
         assertThat(user.getUserInfo().getOccupation()).isEqualTo(userInfoRequestDto.getOccupation());

@@ -28,7 +28,13 @@ public class UserService {
     private final UserInfoMapper userInfoMapper;
 
     @Transactional(readOnly = true)
-    public User getUser(String email) {
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
     }
@@ -51,7 +57,7 @@ public class UserService {
 
     @Transactional
     public User login(LoginRequestDto dto) {
-        User user = getUser(dto.getEmail());
+        User user = getUserByEmail(dto.getEmail());
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new CommonException(BError.NOT_MATCH, "password");
         }
