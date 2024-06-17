@@ -15,7 +15,6 @@ import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.mapper.UserMapper;
 import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
-import com.billybang.userservice.util.CookieUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -92,12 +92,17 @@ public class UserController implements UserApi {
                 .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_NAME))
                 .findFirst().orElseThrow(() -> new CommonException(BError.NOT_EXIST, "refresh token"));
         String accessToken = tokenService.genAccessTokenByRefreshToken(refreshTokenCookie.getValue());
-        ResponseCookie accessTokenCookie = CookieUtils.createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
+        ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,
                         accessTokenCookie.toString(),
                         refreshTokenCookie.toString())
                 .body(ApiUtils.success(null));
+    }
+
+    @GetMapping("/test")
+    public void test() {
+        log.info("test");
     }
 
     private ResponseCookie createCookie(String cookieName, String cookieValue, long maxAge) {

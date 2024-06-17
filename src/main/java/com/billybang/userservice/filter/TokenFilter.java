@@ -1,5 +1,8 @@
 package com.billybang.userservice.filter;
 
+import com.billybang.userservice.api.ApiUtils;
+import com.billybang.userservice.exception.ErrorCode;
+import com.billybang.userservice.exception.ErrorResponse;
 import com.billybang.userservice.security.AuthConstant;
 import com.billybang.userservice.security.UserRoleType;
 import com.billybang.userservice.security.jwt.JWTConstant;
@@ -12,6 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -60,6 +65,11 @@ public class TokenFilter extends OncePerRequestFilter {
 
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException e) {
             SecurityContextHolder.clearContext();
+//            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//            response.getWriter().write(
+//                    Objects.requireNonNull(ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+//                            .body(ApiUtils.error(ErrorResponse.of(ErrorCode.UNAUTHORIZED))).getBody()).toString()
+//            );
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
