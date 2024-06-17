@@ -12,7 +12,7 @@ spring:
       - logging
       - security
   config:
-    import: [optional:configserver:http://3.39.52.110:8888]
+    import: optional:configserver:http://3.39.52.110:8888
   cloud:
     config:
       name: user-service

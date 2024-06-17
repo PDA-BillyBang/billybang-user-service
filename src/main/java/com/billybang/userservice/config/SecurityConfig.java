@@ -109,9 +109,9 @@ public class SecurityConfig {
             String refreshToken = tokenService.genRefreshTokenByEmail(principal.getAttribute("email"));
             String userId = Objects.requireNonNull(principal.getAttribute(USER_ID));
 
-            response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE));
-            response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE));
-            response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE));
+            response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
+            response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
+            response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE / 1000));
         };
     }
 

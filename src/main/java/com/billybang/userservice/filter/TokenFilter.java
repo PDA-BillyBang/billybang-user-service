@@ -1,8 +1,8 @@
 package com.billybang.userservice.filter;
 
 import com.billybang.userservice.security.AuthConstant;
-import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
+import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.service.TokenService;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
@@ -57,6 +57,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
             }
             filterChain.doFilter(request, response);
+
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException e) {
             SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);

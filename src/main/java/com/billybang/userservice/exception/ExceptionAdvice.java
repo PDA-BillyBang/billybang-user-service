@@ -3,6 +3,7 @@ package com.billybang.userservice.exception;
 import com.billybang.userservice.api.ApiResult;
 import com.billybang.userservice.api.ApiUtils;
 import com.billybang.userservice.exception.common.CommonException;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.BindException;
-import java.nio.file.AccessDeniedException;
 import java.util.Set;
 
 @Slf4j
@@ -59,6 +59,7 @@ public class ExceptionAdvice {
 
 	/**
 	 * 주로 @RequestParam에서 enum으로 binding 못할 경우 발생
+	 *
 	 * @PathVariable에서 string -> int/long 등의 숫자 타입 binding 못할 경우
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -95,15 +96,25 @@ public class ExceptionAdvice {
 	/**
 	 * 필요한 권한을 보유하지 않은 경우 발생
 	 */
-	@ExceptionHandler(AccessDeniedException.class)
-	protected ResponseEntity<ApiResult<ErrorResponse>> handleAccessDeniedException(AccessDeniedException e) {
+	@ExceptionHandler(java.nio.file.AccessDeniedException.class)
+	protected ResponseEntity<ApiResult<ErrorResponse>> handleAccessDeniedException(Exception e) {
 		log.error("handleAccessDeniedException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(ErrorCode.ACCESS_DENIED);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiUtils.error(response));
 	}
 
+	@ExceptionHandler(JwtException.class)
+	protected ResponseEntity<ApiResult<ErrorResponse>> handleJwtException(JwtException e) {
+		log.error("handleJwtException {}", e.getMessage());
+		final ErrorResponse response = ErrorResponse.of(ErrorCode.UNAUTHORIZED);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiUtils.error(response));
+	}
+
+	/**
+	 * 비즈니스 로직상의 에러
+	 */
 	@ExceptionHandler(CommonException.class)
-	public ResponseEntity<ApiResult<ErrorResponse>> handleCommonException(final CommonException e) {
+	protected ResponseEntity<ApiResult<ErrorResponse>> handleCommonException(final CommonException e) {
 		log.error("CommonException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.status(response.getStatus()).body(ApiUtils.error(response));

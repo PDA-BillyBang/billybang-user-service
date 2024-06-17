@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +56,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @GetMapping("/user-info")
-    ResponseEntity<ApiResult<UserResponseDto>> getUser();
+    ResponseEntity<ApiResult<UserResponseDto>> getUserInfo();
 
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @ApiResponses(value = {
@@ -64,14 +65,17 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping("/user-info")
-    ResponseEntity<ApiResult<?>> update(@RequestBody UpdateUserRequestDto requestDto);
+    ResponseEntity<ApiResult<?>> updateUserInfo(@RequestBody UpdateUserRequestDto requestDto);
 
-    @Operation(summary = "테스트", description = "")
+    @Operation(summary = "토큰 갱신", description = "refresh token 을 통해 access token 을 갱신합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(
+                    responseCode = "200",
+                    headers = {@Header(name = "Set-Cookie", description = "access_token 정보를 포함")},
+                    description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @GetMapping("/test")
-    ResponseEntity<String> test();
+    @PutMapping("/token")
+    ResponseEntity<?> updateAccessToken(HttpServletRequest request);
 }
