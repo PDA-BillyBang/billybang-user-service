@@ -3,14 +3,13 @@ package com.billybang.userservice.service;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,7 +34,7 @@ public class TokenService {
     }
 
     public String genAccessTokenByEmail(String email) {
-        User user = userService.getUser(email);
+        User user = userService.getUserByEmail(email);
         setUserCode(email, user.getUpdatedAt());
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList(UserRoleType.ROLE_CUSTOMER.name());
@@ -68,7 +67,6 @@ public class TokenService {
     }
 
     public Claims validateToken(String jwtToken) {
-        // TODO : 예외 처리
         return Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 }

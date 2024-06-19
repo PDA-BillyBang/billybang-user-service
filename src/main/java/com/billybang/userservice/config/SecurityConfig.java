@@ -27,7 +27,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Objects;
 
+import static com.billybang.userservice.security.AuthConstant.USER_ID;
 import static com.billybang.userservice.security.jwt.JWTConstant.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -82,7 +84,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
                         .logoutSuccessHandler(onLogoutSuccess())
-                        .deleteCookies(ACCESS_TOKEN, REFRESH_TOKEN))
+                        .deleteCookies(ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME))
                 .build();
     }
 
@@ -105,9 +107,11 @@ public class SecurityConfig {
 
             String accessToken = tokenService.genAccessTokenByEmail(principal.getAttribute("email"));
             String refreshToken = tokenService.genRefreshTokenByEmail(principal.getAttribute("email"));
+            String userId = Objects.requireNonNull(principal.getAttribute(USER_ID));
 
-            response.addCookie(createCookie(accessToken, ACCESS_TOKEN, ACCESS_TOKEN_MAX_AGE));
-            response.addCookie(createCookie(refreshToken, REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE));
+            response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
+            response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
+            response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE / 1000));
         };
     }
 
@@ -117,8 +121,8 @@ public class SecurityConfig {
         };
     }
 
-    private Cookie createCookie(String token, String cookieName, long maxAge) {
-        Cookie cookie = new Cookie(cookieName, token);
+    private Cookie createCookie(String cookieName, String cookieValue, long maxAge) {
+        Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);

@@ -9,12 +9,10 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDto {
+public class SignUpResponseDto {
 
-    private Long userId;
     private String email;
     private LocalDate birthDate;
     private String nickname;
     private UserInfoResponseDto userInfo;
-
 }

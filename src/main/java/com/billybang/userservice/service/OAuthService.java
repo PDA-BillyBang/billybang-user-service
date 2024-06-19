@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.billybang.userservice.security.AuthConstant.USER_ID;
+
 @Service
 @RequiredArgsConstructor
 public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -41,7 +43,7 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         OAuthUserProfile userProfile = OAuthAttributes.extract(registrationId, attributes);
         User user = saveOrUpdate(userProfile);
 
-        Map<String, Object> customAttributes = customAttributes(attributes, userNameAttributeName, userProfile);
+        Map<String, Object> customAttributes = customAttributes(attributes, userNameAttributeName, user, userProfile);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(UserRoleType.ROLE_CUSTOMER.name())),
@@ -52,9 +54,11 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
 
     private Map<String, Object> customAttributes(Map<String, Object> attributes,
                                                  String userNameAttributeName,
+                                                 User user,
                                                  OAuthUserProfile userProfile) {
         Map<String, Object> customAttributes = new LinkedHashMap<>();
         customAttributes.put(userNameAttributeName, attributes.get(userNameAttributeName));
+        customAttributes.put(USER_ID, String.valueOf(user.getId())); // OAuth 로그인 key 값이 아닌 billybang user 의 고유한 userId 값
         customAttributes.put("email", userProfile.getEmail());
         customAttributes.put("nickname", userProfile.getNickname());
         return customAttributes;

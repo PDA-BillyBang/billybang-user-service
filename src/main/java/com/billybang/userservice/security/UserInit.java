@@ -2,12 +2,14 @@ package com.billybang.userservice.security;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
+import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.TokenResponseDto;
 import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Profile({"local", "local-cloud", "test", "dev"})
 @Component
 @RequiredArgsConstructor
 public class UserInit {
@@ -28,6 +31,7 @@ public class UserInit {
                 .email(AuthConstant.ADMIN_USER)
                 .password(AuthConstant.ADMIN_PWD)
                 .nickname("admin")
+                .userInfo(new UserInfoRequestDto())
                 .build();
 
         userService.signUp(dto);

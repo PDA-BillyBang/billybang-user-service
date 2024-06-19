@@ -6,4 +6,5 @@ public class AuthConstant {
 	public static final String DEBUG_MODE = "debug";
 	public static final String ADMIN_USER = "admin.billybang@gmail.com";
 	public static final String ADMIN_PWD = "admin";
+	public static final String USER_ID = "userId";
 }

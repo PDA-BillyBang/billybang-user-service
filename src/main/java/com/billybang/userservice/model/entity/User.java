@@ -1,5 +1,6 @@
 package com.billybang.userservice.model.entity;
 
+import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.type.SignUpType;
 import com.billybang.userservice.model.vo.BaseTime;
 import jakarta.persistence.*;
@@ -32,11 +33,26 @@ public class User extends BaseTime {
     @Column(unique = true)
     private String nickname;
 
+    @OneToOne(mappedBy = "user")
+    private UserInfo userInfo;
+
+    public void addUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+        userInfo.setUser(this);
+    }
+
     // TODO: Implement update method
     public User update(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
         return this;
+    }
+
+    public void update(UpdateUserRequestDto dto) {
+        this.password = dto.getPassword();
+        this.birthDate = dto.getBirthDate();
+        this.nickname = dto.getNickname();
+        this.userInfo.update(dto.getUserInfo());
     }
 
 }
