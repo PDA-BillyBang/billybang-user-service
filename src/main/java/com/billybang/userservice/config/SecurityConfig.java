@@ -16,10 +16,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -55,7 +54,6 @@ public class SecurityConfig {
     private final TokenFilter tokenFilter;
     private final TokenService tokenService;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuthService;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -81,13 +79,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorization")
-                                .authorizationRequestRepository(authorizationRequestRepository)
-                        )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuthService))
                         .successHandler(onOAuth2LoginSuccess())
+                        .failureHandler(onOAuth2LoginFailure())
                 )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
@@ -120,6 +115,14 @@ public class SecurityConfig {
             response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
             response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
             response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE / 1000));
+        };
+    }
+
+    @Bean
+    public AuthenticationFailureHandler onOAuth2LoginFailure() {
+        return (request, response, exception) -> {
+            log.error(exception.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         };
     }
 
