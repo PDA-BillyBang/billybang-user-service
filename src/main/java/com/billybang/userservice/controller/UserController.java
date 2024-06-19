@@ -9,10 +9,7 @@ import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
-import com.billybang.userservice.model.dto.response.LoginResponseDto;
-import com.billybang.userservice.model.dto.response.SignUpResponseDto;
-import com.billybang.userservice.model.dto.response.UserInfoResponseDto;
-import com.billybang.userservice.model.dto.response.UserResponseDto;
+import com.billybang.userservice.model.dto.response.*;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.entity.UserInfo;
 import com.billybang.userservice.model.mapper.UserInfoMapper;
@@ -105,6 +102,15 @@ public class UserController implements UserApi {
                         accessTokenCookie.toString(),
                         refreshTokenCookie.toString())
                 .body(ApiUtils.success(null));
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<ValidateEmailResponseDto>> validateEmail(String email) {
+        Boolean result = userService.validateDuplicateEmail(email);
+        return ResponseEntity.ok(ApiUtils.success(
+                ValidateEmailResponseDto.builder()
+                        .existsByEmail(result)
+                        .build()));
     }
 
     @GetMapping("/test")

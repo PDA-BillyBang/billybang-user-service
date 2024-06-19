@@ -51,6 +51,11 @@ public class UserService {
         return getUserByEmail(userEmail).getId();
     }
 
+    @Transactional(readOnly = true)
+    public Boolean validateDuplicateEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     @Transactional
     public User signUp(SignUpRequestDto dto) {
         try {
