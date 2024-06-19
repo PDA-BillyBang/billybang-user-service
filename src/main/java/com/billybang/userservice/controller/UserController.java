@@ -60,25 +60,20 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<ApiResult<LoginResponseDto>> login(LoginRequestDto requestDto) {
-        try {
-            User user = userService.login(requestDto);
+        User user = userService.login(requestDto);
 
-            String accessToken = tokenService.genAccessTokenByEmail(user.getEmail());
-            String refreshToken = tokenService.genRefreshTokenByEmail(user.getEmail());
-            ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
-            ResponseCookie refreshTokenCookie = createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000);
-            ResponseCookie userIdTokenCookie = createCookie(USER_ID, String.valueOf(user.getId()), ACCESS_TOKEN_MAX_AGE / 1000);
+        String accessToken = tokenService.genAccessTokenByEmail(user.getEmail());
+        String refreshToken = tokenService.genRefreshTokenByEmail(user.getEmail());
+        ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
+        ResponseCookie refreshTokenCookie = createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000);
+        ResponseCookie userIdTokenCookie = createCookie(USER_ID, String.valueOf(user.getId()), ACCESS_TOKEN_MAX_AGE / 1000);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE,
-                            accessTokenCookie.toString(),
-                            refreshTokenCookie.toString(),
-                            userIdTokenCookie.toString())
-                    .body(ApiUtils.success(userMapper.toLoginResponseDto(user)));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new CommonException(BError.FAIL, "login");
-        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE,
+                        accessTokenCookie.toString(),
+                        refreshTokenCookie.toString(),
+                        userIdTokenCookie.toString())
+                .body(ApiUtils.success(userMapper.toLoginResponseDto(user)));
     }
 
     @Override
