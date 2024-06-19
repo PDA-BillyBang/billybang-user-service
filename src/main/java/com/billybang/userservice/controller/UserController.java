@@ -8,10 +8,14 @@ import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
+import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.LoginResponseDto;
 import com.billybang.userservice.model.dto.response.SignUpResponseDto;
+import com.billybang.userservice.model.dto.response.UserInfoResponseDto;
 import com.billybang.userservice.model.dto.response.UserResponseDto;
 import com.billybang.userservice.model.entity.User;
+import com.billybang.userservice.model.entity.UserInfo;
+import com.billybang.userservice.model.mapper.UserInfoMapper;
 import com.billybang.userservice.model.mapper.UserMapper;
 import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
@@ -38,12 +42,20 @@ public class UserController implements UserApi {
     private final UserService userService;
     private final TokenService tokenService;
     private final UserMapper userMapper;
+    private final UserInfoMapper userInfoMapper;
 
     @Override
     public ResponseEntity<ApiResult<SignUpResponseDto>> signUp(SignUpRequestDto requestDto) {
         User user = userService.signUp(requestDto);
         return ResponseEntity.created(null)
                 .body(ApiUtils.success(userMapper.toSignUpResponseDto(user)));
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<UserInfoResponseDto>> addUserInfo(UserInfoRequestDto requestDto) {
+        UserInfo userInfo = userService.addUserInfo(requestDto);
+        return ResponseEntity.created(null)
+                .body(ApiUtils.success(userInfoMapper.toDto(userInfo)));
     }
 
     @Override

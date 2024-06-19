@@ -5,7 +5,9 @@ import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
+import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.entity.User;
+import com.billybang.userservice.model.entity.UserInfo;
 import com.billybang.userservice.model.mapper.UserInfoMapper;
 import com.billybang.userservice.model.mapper.UserMapper;
 import com.billybang.userservice.repository.UserInfoRepository;
@@ -66,6 +68,15 @@ public class UserService {
     }
 
     @Transactional
+    public UserInfo addUserInfo(UserInfoRequestDto dto) {
+        Long loginUserId = getLoginUserId();
+        User user = getUserById(loginUserId);
+        UserInfo userInfo = userInfoMapper.toEntity(dto);
+        user.addUserInfo(userInfo);
+        return userInfo;
+    }
+
+    @Transactional
     public User login(LoginRequestDto dto) {
         User user = getUserByEmail(dto.getEmail());
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
@@ -90,8 +101,6 @@ public class UserService {
         if (userRepository.existsByNickname(dto.getNickname())) {
             throw new CommonException(BError.EXIST, "nickname");
         }
-        User user = userMapper.toEntity(dto);
-        user.addUserInfo(userInfoMapper.toEntity(dto.getUserInfo()));
-        return user;
+        return userMapper.toEntity(dto);
     }
 }
