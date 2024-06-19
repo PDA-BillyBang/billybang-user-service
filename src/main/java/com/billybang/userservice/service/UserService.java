@@ -57,9 +57,7 @@ public class UserService {
             if (userRepository.existsByEmail(dto.getEmail())) {
                 throw new CommonException(BError.EXIST, "email");
             }
-            User user = userRepository.save(setUser(dto));
-            userInfoRepository.save(user.getUserInfo());
-            return user;
+            return userRepository.save(setUser(dto));
         } catch (Exception e) {
             log.error(e.getMessage());
             log.debug(e.getMessage(), e);
