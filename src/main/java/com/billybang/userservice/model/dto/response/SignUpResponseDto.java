@@ -14,5 +14,4 @@ public class SignUpResponseDto {
     private String email;
     private LocalDate birthDate;
     private String nickname;
-    private UserInfoResponseDto userInfo;
 }

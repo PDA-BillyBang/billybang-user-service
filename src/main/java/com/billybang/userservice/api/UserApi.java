@@ -3,8 +3,10 @@ package com.billybang.userservice.api;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
 import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
+import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.LoginResponseDto;
 import com.billybang.userservice.model.dto.response.SignUpResponseDto;
+import com.billybang.userservice.model.dto.response.UserInfoResponseDto;
 import com.billybang.userservice.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -27,6 +29,15 @@ public interface UserApi {
     })
     @PostMapping("/sign-up")
     ResponseEntity<ApiResult<SignUpResponseDto>> signUp(@RequestBody SignUpRequestDto requestDto);
+
+    @Operation(summary = "회원 추가 정보 등록", description = "대출 상품 추천을 위한 추가 정보를 등록합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PostMapping("/user-info")
+    ResponseEntity<ApiResult<UserInfoResponseDto>> addUserInfo(@RequestBody UserInfoRequestDto requestDto);
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인을 합니다.")
     @ApiResponses(value = {
