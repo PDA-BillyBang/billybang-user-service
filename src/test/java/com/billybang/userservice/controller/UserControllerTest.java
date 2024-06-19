@@ -48,26 +48,12 @@ class UserControllerTest {
     @Transactional
     @DisplayName("회원가입 API 테스트")
     void signUp() throws Exception {
-        UserInfoRequestDto userInfoRequestDto = UserInfoRequestDto.builder()
-                .occupation(Occupation.GENERAL)
-                .companySize(CompanySize.LARGE)
-                .employmentDuration(24)
-                .individualIncome(3000)
-                .totalMarriedIncome(5000)
-                .childrenCount(1)
-                .isForeign(false)
-                .isFirstHouseBuyer(true)
-                .isMarried(true)
-                .isNewlyMarried(true)
-                .hasOtherLoans(false)
-                .build();
 
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .email("test1234@test.com")
                 .password("test1234")
                 .nickname("test")
                 .birthDate(LocalDate.of(2000, 1, 1))
-                .userInfo(userInfoRequestDto)
                 .build();
 
         String request = objectMapper.writeValueAsString(signUpRequestDto);

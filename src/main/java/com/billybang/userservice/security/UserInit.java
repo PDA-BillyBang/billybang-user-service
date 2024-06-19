@@ -31,7 +31,6 @@ public class UserInit {
                 .email(AuthConstant.ADMIN_USER)
                 .password(AuthConstant.ADMIN_PWD)
                 .nickname("admin")
-                .userInfo(new UserInfoRequestDto())
                 .build();
 
         userService.signUp(dto);
