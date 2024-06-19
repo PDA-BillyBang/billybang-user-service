@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -46,12 +48,14 @@ public class SecurityConfig {
             antMatcher("/index.html"),
             antMatcher("/error"),
             antMatcher("/favicon.ico"),
-            antMatcher("/actuator/**")
+            antMatcher("/actuator/**"),
+            antMatcher("/users/validate-email")
     };
 
     private final TokenFilter tokenFilter;
     private final TokenService tokenService;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuthService;
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> cookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -80,6 +84,8 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuthService))
                         .successHandler(onOAuth2LoginSuccess())
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository))
                 )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
