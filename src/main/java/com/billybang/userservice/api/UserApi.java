@@ -64,7 +64,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @GetMapping("/user-info")
-    ResponseEntity<ApiResult<UserResponseDto>> getUserInfo();
+    ResponseEntity<ApiResult<GetUserInfoResponseDto>> getUserInfo();
 
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @ApiResponses(value = {
