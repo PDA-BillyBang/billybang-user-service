@@ -95,4 +95,13 @@ public interface UserApi {
     })
     @GetMapping("/validate-email")
     ResponseEntity<ApiResult<ValidateEmailResponseDto>> validateEmail(@RequestParam String email);
+
+    @Operation(summary = "토큰의 유효성 확인", description = "토큰의 유효성을 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/validate-token")
+    ResponseEntity<ApiResult<ValidateTokenResponseDto>> validateToken();
 }

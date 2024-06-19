@@ -55,7 +55,6 @@ public class SecurityConfig {
     private final TokenFilter tokenFilter;
     private final TokenService tokenService;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuthService;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> cookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,8 +83,6 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuthService))
                         .successHandler(onOAuth2LoginSuccess())
-                        .authorizationEndpoint(authorization -> authorization
-                                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository))
                 )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")

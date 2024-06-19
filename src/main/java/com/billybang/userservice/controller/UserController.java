@@ -110,7 +110,18 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(ApiUtils.success(
                 ValidateEmailResponseDto.builder()
                         .existsByEmail(result)
-                        .build()));
+                        .build())
+        );
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<ValidateTokenResponseDto>> validateToken() {
+        log.info("validate token");
+        return ResponseEntity.ok(ApiUtils.success(
+                ValidateTokenResponseDto.builder()
+                        .isValid(true)
+                        .build())
+        );
     }
 
     @GetMapping("/test")
