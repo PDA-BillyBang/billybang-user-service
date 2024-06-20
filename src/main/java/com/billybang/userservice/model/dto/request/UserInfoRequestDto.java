@@ -22,6 +22,6 @@ public class UserInfoRequestDto {
     private Boolean isForeign;
     private Boolean isFirstHouseBuyer;
     private Boolean isMarried;
-    private Boolean isNewlyMarried;
+    private Integer yearsOfMarriage;
     private Boolean hasOtherLoans;
 }
