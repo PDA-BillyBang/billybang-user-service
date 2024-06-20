@@ -4,12 +4,14 @@ import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.security.jwt.JWTConstant;
 import com.billybang.userservice.security.UserRoleType;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -71,11 +73,13 @@ public class TokenService {
     }
 
     public Boolean validateRequestContextToken() {
-        String accessToken = (String) Objects.requireNonNull(
-                        RequestContextHolder.getRequestAttributes())
-                .getAttribute(JWTConstant.ACCESS_TOKEN_NAME, 0);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Cookie[] cookies = Objects.requireNonNull(requestAttributes).getRequest().getCookies();
+        Cookie accessToken = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN_NAME))
+                .findFirst().get();
         try {
-            validateToken(accessToken);
+            validateToken(accessToken.getValue());
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
