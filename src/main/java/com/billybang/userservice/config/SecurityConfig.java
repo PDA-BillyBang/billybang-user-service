@@ -48,7 +48,8 @@ public class SecurityConfig {
             antMatcher("/error"),
             antMatcher("/favicon.ico"),
             antMatcher("/actuator/**"),
-            antMatcher("/users/validate-email")
+            antMatcher(HttpMethod.GET, "/users/validate-email"),
+            antMatcher(HttpMethod.GET, "/users/validate-token")
     };
 
     private final TokenFilter tokenFilter;

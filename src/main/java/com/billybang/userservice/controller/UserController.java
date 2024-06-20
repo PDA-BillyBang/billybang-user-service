@@ -106,20 +106,20 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<ApiResult<ValidateEmailResponseDto>> validateEmail(String email) {
-        Boolean result = userService.validateDuplicateEmail(email);
+        Boolean idDuplicate = userService.validateDuplicateEmail(email);
         return ResponseEntity.ok(ApiUtils.success(
                 ValidateEmailResponseDto.builder()
-                        .existsByEmail(result)
+                        .existsByEmail(idDuplicate)
                         .build())
         );
     }
 
     @Override
     public ResponseEntity<ApiResult<ValidateTokenResponseDto>> validateToken() {
-        log.info("validate token");
+        Boolean isValid = tokenService.validateRequestContextToken();
         return ResponseEntity.ok(ApiUtils.success(
                 ValidateTokenResponseDto.builder()
-                        .isValid(true)
+                        .isValid(isValid)
                         .build())
         );
     }
