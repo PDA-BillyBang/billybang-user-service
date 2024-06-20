@@ -39,8 +39,14 @@ public class UserInfo extends BaseTime {
     @Column(name = "individual_income")
     private Integer individualIncome;
 
+    @Column(name = "individual_assets")
+    private Integer individualAssets;
+
     @Column(name = "total_married_income")
     private Integer totalMarriedIncome;
+
+    @Column(name = "total_married_assets")
+    private Integer totalMarriedAssets;
 
     @Column(name = "children_count")
     private Integer childrenCount;
@@ -65,7 +71,9 @@ public class UserInfo extends BaseTime {
         this.companySize = dto.getCompanySize();
         this.employmentDuration = dto.getEmploymentDuration();
         this.individualIncome = dto.getIndividualIncome();
+        this.individualAssets = dto.getIndividualAssets();
         this.totalMarriedIncome = dto.getTotalMarriedIncome();
+        this.totalMarriedAssets = dto.getTotalMarriedAssets();
         this.childrenCount = dto.getChildrenCount();
         this.isForeign = dto.getIsForeign();
         this.isFirstHouseBuyer = dto.getIsFirstHouseBuyer();

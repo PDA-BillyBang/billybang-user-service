@@ -15,7 +15,9 @@ public class UserInfoResponseDto {
     private CompanySize companySize;
     private Integer employmentDuration;
     private Integer individualIncome;
+    private Integer individualAssets;
     private Integer totalMarriedIncome;
+    private Integer totalMarriedAssets;
     private Integer childrenCount;
     private Boolean isForeign;
     private Boolean isFirstHouseBuyer;
