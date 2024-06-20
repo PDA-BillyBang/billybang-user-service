@@ -75,6 +75,8 @@ public class TokenService {
     public Boolean validateRequestContextToken() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         Cookie[] cookies = Objects.requireNonNull(requestAttributes).getRequest().getCookies();
+        if (cookies == null) return false;
+
         Cookie accessToken = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN_NAME))
                 .findFirst().get();
