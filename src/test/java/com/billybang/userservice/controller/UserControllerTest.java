@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -165,4 +166,51 @@ class UserControllerTest {
 
     }
 
+    @Test
+    @DisplayName("로그인 후 회원 추가 정보 등록 API 테스트")
+    void addUserInfo() throws Exception {
+        LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+                .email(AuthConstant.ADMIN_USER)
+                .password(AuthConstant.ADMIN_PWD)
+                .build();
+
+        String request = objectMapper.writeValueAsString(loginRequestDto);
+
+        MockHttpServletResponse response = Objects.requireNonNull(
+                mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+                                .contentType("application/json")
+                                .content(request))
+                        .andExpect(status().isOk())
+                        .andReturn().getResponse());
+
+        String accessToken = Objects.requireNonNull(response.getCookie(JWTConstant.ACCESS_TOKEN_NAME)).getValue();
+        String refreshToken = Objects.requireNonNull(response.getCookie(JWTConstant.REFRESH_TOKEN_NAME)).getValue();
+        String userId = Objects.requireNonNull(response.getCookie(AuthConstant.USER_ID)).getValue();
+
+
+        UserInfoRequestDto userInfoRequestDto = UserInfoRequestDto.builder()
+                .occupation(Occupation.GENERAL)
+                .companySize(CompanySize.LARGE)
+                .employmentDuration(24)
+                .individualIncome(3000)
+                .totalMarriedIncome(5000)
+                .childrenCount(1)
+                .isForeign(false)
+                .isFirstHouseBuyer(true)
+                .isMarried(true)
+                .isNewlyMarried(true)
+                .hasOtherLoans(false)
+                .build();
+
+        String requestUserInfo = objectMapper.writeValueAsString(userInfoRequestDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/user-info")
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken))
+                        .cookie(new Cookie(JWTConstant.REFRESH_TOKEN_NAME, refreshToken))
+                        .cookie(new Cookie(AuthConstant.USER_ID, userId))
+                        .contentType("application/json")
+                        .content(requestUserInfo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response.occupation").value(userInfoRequestDto.getOccupation().name()));
+    }
 }

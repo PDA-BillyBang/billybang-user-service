@@ -75,6 +75,7 @@ public class UserService {
         Long loginUserId = getLoginUserId();
         User user = getUserById(loginUserId);
         UserInfo userInfo = userInfoMapper.toEntity(dto);
+        userInfoRepository.save(userInfo);
         user.addUserInfo(userInfo);
         return userInfo;
     }
