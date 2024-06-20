@@ -69,5 +69,17 @@ public class TokenService {
     public Claims validateToken(String jwtToken) {
         return Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
-}
 
+    public Boolean validateRequestContextToken() {
+        String accessToken = (String) Objects.requireNonNull(
+                        RequestContextHolder.getRequestAttributes())
+                .getAttribute(JWTConstant.ACCESS_TOKEN_NAME, 0);
+        try {
+            validateToken(accessToken);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+}
