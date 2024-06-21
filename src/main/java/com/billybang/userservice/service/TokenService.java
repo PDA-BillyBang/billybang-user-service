@@ -77,11 +77,13 @@ public class TokenService {
         Cookie[] cookies = Objects.requireNonNull(requestAttributes).getRequest().getCookies();
         if (cookies == null) return false;
 
-        Cookie accessToken = Arrays.stream(cookies)
+        Cookie accessTokenCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(JWTConstant.ACCESS_TOKEN_NAME))
-                .findFirst().get();
+                .findFirst().orElse(null);
+        if (accessTokenCookie == null) return false;
+
         try {
-            validateToken(accessToken.getValue());
+            validateToken(accessTokenCookie.getValue());
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
