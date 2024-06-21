@@ -7,7 +7,6 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.*;
 import com.billybang.userservice.model.entity.User;
@@ -85,8 +84,20 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> updateUserInfo(UpdateUserRequestDto requestDto) {
-        userService.updateUser(userService.getLoginUserId(), requestDto);
+    public ResponseEntity<ApiResult<?>> updateUserPassword(String updatePassword) {
+        userService.updateUserPassword(updatePassword);
+        return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<?>> updateUserNickname(String updateNickname) {
+        userService.updateUserNickname(updateNickname);
+        return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<?>> updateUserInfo(UserInfoRequestDto requestDto) {
+        userService.updateUserInfo(requestDto);
         return ResponseEntity.ok(ApiUtils.success(null));
     }
 

@@ -4,7 +4,6 @@ import com.billybang.userservice.exception.common.BError;
 import com.billybang.userservice.exception.common.CommonException;
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.entity.UserInfo;
@@ -90,13 +89,31 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long userId, UpdateUserRequestDto dto) {
-        userRepository.findById(userId)
-                .map(user -> {
-                    user.update(dto);
-                    return user;
+    public void updateUserPassword(String password) {
+        Long userId = getLoginUserId();
+        User user = getUserById(userId);
+        user.updatePassword(passwordEncoder.encode(password));
+    }
+
+    @Transactional
+    public void updateUserNickname(String nickname) {
+        Long userId = getLoginUserId();
+        User user = getUserById(userId);
+        if (userRepository.existsByNickname(nickname)) {
+            throw new CommonException(BError.EXIST, "nickname");
+        }
+        user.updateNickname(nickname);
+    }
+
+    @Transactional
+    public void updateUserInfo(UserInfoRequestDto dto) {
+        Long userId = getLoginUserId();
+        userInfoRepository.findByUserId(userId)
+                .map(userInfo -> {
+                    userInfo.update(dto);
+                    return userInfo;
                 })
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user"));
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user info"));
     }
 
     @Transactional

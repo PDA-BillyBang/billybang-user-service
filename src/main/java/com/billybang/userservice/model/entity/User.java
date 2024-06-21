@@ -48,11 +48,12 @@ public class User extends BaseTime {
         return this;
     }
 
-    public void update(UpdateUserRequestDto dto) {
-        this.password = dto.getPassword();
-        this.birthDate = dto.getBirthDate();
-        this.nickname = dto.getNickname();
-        this.userInfo.update(dto.getUserInfo());
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
 }

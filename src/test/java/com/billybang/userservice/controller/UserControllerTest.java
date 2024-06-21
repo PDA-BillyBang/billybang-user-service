@@ -146,7 +146,7 @@ class UserControllerTest {
                 .isForeign(false)
                 .isFirstHouseBuyer(true)
                 .isMarried(true)
-                .isNewlyMarried(true)
+                .yearOfMarriage(2010)
                 .hasOtherLoans(false)
                 .build();
 
@@ -198,7 +198,7 @@ class UserControllerTest {
                 .isForeign(false)
                 .isFirstHouseBuyer(true)
                 .isMarried(true)
-                .isNewlyMarried(true)
+                .yearOfMarriage(2010)
                 .hasOtherLoans(false)
                 .build();
 

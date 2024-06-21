@@ -76,19 +76,13 @@ class UserServiceTest {
                 .isForeign(false)
                 .isFirstHouseBuyer(true)
                 .isMarried(true)
-                .isNewlyMarried(true)
+                .yearOfMarriage(2010)
                 .hasOtherLoans(false)
                 .build();
 
-        UpdateUserRequestDto updateUserRequestDto = UpdateUserRequestDto.builder()
-                .nickname("billy")
-                .userInfo(userInfoRequestDto)
-                .build();
-
-        userService.updateUser(1L, updateUserRequestDto);
+        userService.updateUserInfo(userInfoRequestDto);
         User user = userService.getUserByEmail(ADMIN_USER);
 
-        assertThat(user.getNickname()).isEqualTo(updateUserRequestDto.getNickname());
         assertThat(user.getUserInfo().getOccupation()).isEqualTo(userInfoRequestDto.getOccupation());
     }
 
