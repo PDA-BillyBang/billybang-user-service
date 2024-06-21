@@ -2,7 +2,6 @@ package com.billybang.userservice.api;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,6 +65,24 @@ public interface UserApi {
     @GetMapping("/user-info")
     ResponseEntity<ApiResult<GetUserInfoResponseDto>> getUserInfo();
 
+    @Operation(summary = "비밀번호 수정", description = "비밀번호를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PutMapping("/password")
+    ResponseEntity<ApiResult<?>> updateUserPassword(@RequestBody String updatePassword);
+
+    @Operation(summary = "닉네임 수정", description = "닉네임을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PutMapping("/nickname")
+    ResponseEntity<ApiResult<?>> updateUserNickname(@RequestBody String updateNickname);
+
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -73,7 +90,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping("/user-info")
-    ResponseEntity<ApiResult<?>> updateUserInfo(@RequestBody UpdateUserRequestDto requestDto);
+    ResponseEntity<ApiResult<?>> updateUserInfo(@RequestBody UserInfoRequestDto requestDto);
 
     @Operation(summary = "토큰 갱신", description = "refresh token 을 통해 access token 을 갱신합니다.")
     @ApiResponses(value = {
