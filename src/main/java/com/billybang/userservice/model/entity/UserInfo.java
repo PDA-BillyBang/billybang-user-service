@@ -60,8 +60,8 @@ public class UserInfo extends BaseTime {
     @Column(name = "is_married")
     private Boolean isMarried;
 
-    @Column(name = "years_of_marriage")
-    private Integer yearsOfMarriage;
+    @Column(name = "year_of_marriage")
+    private Integer yearOfMarriage;
 
     @Column(name = "has_other_loans")
     private Boolean hasOtherLoans;
@@ -78,7 +78,7 @@ public class UserInfo extends BaseTime {
         this.isForeign = dto.getIsForeign();
         this.isFirstHouseBuyer = dto.getIsFirstHouseBuyer();
         this.isMarried = dto.getIsMarried();
-        this.yearsOfMarriage = dto.getYearsOfMarriage();
+        this.yearOfMarriage = dto.getYearOfMarriage();
         this.hasOtherLoans = dto.getHasOtherLoans();
     }
 
