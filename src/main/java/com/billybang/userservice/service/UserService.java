@@ -99,7 +99,12 @@ public class UserService {
     public void updateUserPassword(String password) {
         Long userId = getLoginUserId();
         User user = getUserById(userId);
-        user.updatePassword(passwordEncoder.encode(password));
+
+        String encodedPassword = passwordEncoder.encode(password);
+        if (user.getPassword().equals(encodedPassword)) {
+            throw new CommonException(BError.MATCHES, "previous password", "new password");
+        }
+        user.updatePassword(encodedPassword);
     }
 
     @Transactional
