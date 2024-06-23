@@ -103,6 +103,12 @@ public class UserController implements UserApi {
     }
 
     @Override
+    public ResponseEntity<ApiResult<?>> deleteUser() {
+        userService.deleteUser();
+        return ResponseEntity.ok(ApiUtils.success(null));
+    }
+
+    @Override
     public ResponseEntity<?> updateAccessToken(HttpServletRequest request) {
         Cookie refreshTokenCookie = Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_NAME))

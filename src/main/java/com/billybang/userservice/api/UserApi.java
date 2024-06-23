@@ -92,6 +92,15 @@ public interface UserApi {
     @PutMapping("/user-info")
     ResponseEntity<ApiResult<UserInfoResponseDto>> updateUserInfo(@RequestBody UserInfoRequestDto requestDto);
 
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @DeleteMapping
+    ResponseEntity<ApiResult<?>> deleteUser();
+
     @Operation(summary = "토큰 갱신", description = "refresh token 을 통해 access token 을 갱신합니다.")
     @ApiResponses(value = {
             @ApiResponse(

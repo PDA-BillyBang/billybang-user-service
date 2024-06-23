@@ -124,6 +124,13 @@ public class UserService {
     }
 
     @Transactional
+    public void deleteUser() {
+        Long userId = getLoginUserId();
+        User user = getUserById(userId);
+        userRepository.delete(user);
+    }
+
+    @Transactional
     protected User setUser(SignUpRequestDto dto) {
 
         if (userRepository.existsByNickname(dto.getNickname())) {
