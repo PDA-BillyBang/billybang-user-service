@@ -2,7 +2,6 @@ package com.billybang.userservice.security;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.dto.response.TokenResponseDto;
 import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
@@ -48,7 +47,7 @@ public class UserInit {
                 .refreshToken(tokenService.genRefreshTokenByEmail(loginDto.getEmail()))
                 .build();
 
-        Claims claims = tokenService.validateToken(token.getAccessToken());
+        Claims claims = tokenService.getClaims(token.getAccessToken());
         List<String> authorities = (List) claims.get("authorities");
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 claims.getSubject(), null,

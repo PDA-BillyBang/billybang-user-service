@@ -96,9 +96,10 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> updateUserInfo(UserInfoRequestDto requestDto) {
+    public ResponseEntity<ApiResult<UserInfoResponseDto>> updateUserInfo(UserInfoRequestDto requestDto) {
         userService.updateUserInfo(requestDto);
-        return ResponseEntity.ok(ApiUtils.success(null));
+        UserInfo userInfo = userService.getUserInfo();
+        return ResponseEntity.ok(ApiUtils.success(userInfoMapper.toDto(userInfo)));
     }
 
     @Override

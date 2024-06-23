@@ -90,7 +90,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping("/user-info")
-    ResponseEntity<ApiResult<?>> updateUserInfo(@RequestBody UserInfoRequestDto requestDto);
+    ResponseEntity<ApiResult<UserInfoResponseDto>> updateUserInfo(@RequestBody UserInfoRequestDto requestDto);
 
     @Operation(summary = "토큰 갱신", description = "refresh token 을 통해 access token 을 갱신합니다.")
     @ApiResponses(value = {

@@ -79,6 +79,13 @@ public class UserService {
         return userInfo;
     }
 
+    @Transactional(readOnly = true)
+    public UserInfo getUserInfo() {
+        Long userId = getLoginUserId();
+        return userInfoRepository.findByUserId(userId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user info"));
+    }
+
     @Transactional
     public User login(LoginRequestDto dto) {
         User user = getUserByEmail(dto.getEmail());

@@ -63,12 +63,12 @@ public class TokenService {
     }
 
     public String genAccessTokenByRefreshToken(String refreshToken) {
-        Claims claims = validateToken(refreshToken);
+        Claims claims = getClaims(refreshToken);
         String username = claims.getSubject();
         return genAccessTokenByEmail(username);
     }
 
-    public Claims validateToken(String jwtToken) {
+    public Claims getClaims(String jwtToken) {
         return Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 
@@ -83,7 +83,7 @@ public class TokenService {
         if (accessTokenCookie == null) return false;
 
         try {
-            validateToken(accessTokenCookie.getValue());
+            getClaims(accessTokenCookie.getValue());
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
