@@ -52,7 +52,7 @@
     </springProfile>
     <!-- dev Profile 에서의 로그 설정 -->
     <springProfile name="dev">
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
         </root>
