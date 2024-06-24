@@ -3,11 +3,7 @@ package com.billybang.userservice.controller;
 import com.billybang.userservice.api.ApiResult;
 import com.billybang.userservice.api.ApiUtils;
 import com.billybang.userservice.api.UserApi;
-import com.billybang.userservice.exception.common.BError;
-import com.billybang.userservice.exception.common.CommonException;
-import com.billybang.userservice.model.dto.request.LoginRequestDto;
-import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
+import com.billybang.userservice.model.dto.request.*;
 import com.billybang.userservice.model.dto.response.*;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.entity.UserInfo;
@@ -15,8 +11,6 @@ import com.billybang.userservice.model.mapper.UserInfoMapper;
 import com.billybang.userservice.model.mapper.UserMapper;
 import com.billybang.userservice.service.TokenService;
 import com.billybang.userservice.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,9 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-
-import static com.billybang.userservice.security.AuthConstant.USER_ID;
 import static com.billybang.userservice.security.jwt.JWTConstant.*;
 
 @Slf4j
@@ -62,13 +53,11 @@ public class UserController implements UserApi {
         String refreshToken = tokenService.genRefreshTokenByEmail(user.getEmail());
         ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
         ResponseCookie refreshTokenCookie = createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000);
-        ResponseCookie userIdTokenCookie = createCookie(USER_ID, String.valueOf(user.getId()), ACCESS_TOKEN_MAX_AGE / 1000);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,
                         accessTokenCookie.toString(),
-                        refreshTokenCookie.toString(),
-                        userIdTokenCookie.toString())
+                        refreshTokenCookie.toString())
                 .body(ApiUtils.success(userMapper.toLoginResponseDto(user)));
     }
 
@@ -84,14 +73,14 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> updateUserPassword(String updatePassword) {
-        userService.updateUserPassword(updatePassword);
+    public ResponseEntity<ApiResult<?>> updateUserPassword(UpdatePwdRequestDto updatePassword) {
+        userService.updateUserPassword(updatePassword.getPassword());
         return ResponseEntity.ok(ApiUtils.success(null));
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> updateUserNickname(String updateNickname) {
-        userService.updateUserNickname(updateNickname);
+    public ResponseEntity<ApiResult<?>> updateUserNickname(UpdateNicknameRequestDto updateNickname) {
+        userService.updateUserNickname(updateNickname.getNickname());
         return ResponseEntity.ok(ApiUtils.success(null));
     }
 
@@ -109,25 +98,21 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<?> updateAccessToken(HttpServletRequest request) {
-        Cookie refreshTokenCookie = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_NAME))
-                .findFirst().orElseThrow(() -> new CommonException(BError.NOT_EXIST, "refresh token"));
-        String accessToken = tokenService.genAccessTokenByRefreshToken(refreshTokenCookie.getValue());
-        ResponseCookie accessTokenCookie = createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE,
-                        accessTokenCookie.toString(),
-                        refreshTokenCookie.toString())
-                .body(ApiUtils.success(null));
-    }
-
-    @Override
     public ResponseEntity<ApiResult<ValidateEmailResponseDto>> validateEmail(String email) {
         Boolean idDuplicate = userService.validateDuplicateEmail(email);
         return ResponseEntity.ok(ApiUtils.success(
                 ValidateEmailResponseDto.builder()
                         .existsByEmail(idDuplicate)
+                        .build())
+        );
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<ValidateNicknameResponseDto>> validateNickname(String nickname) {
+        Boolean isDuplicate = userService.validateDuplicateNickname(nickname);
+        return ResponseEntity.ok(ApiUtils.success(
+                ValidateNicknameResponseDto.builder()
+                        .existsByNickname(isDuplicate)
                         .build())
         );
     }

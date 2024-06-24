@@ -116,11 +116,8 @@ public class SecurityConfig {
 
             String accessToken = tokenService.genAccessTokenByEmail(principal.getAttribute("email"));
             String refreshToken = tokenService.genRefreshTokenByEmail(principal.getAttribute("email"));
-            String userId = Objects.requireNonNull(principal.getAttribute(USER_ID));
 
-            response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
-            response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
-            response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE / 1000));
+            addCookies(response, accessToken, refreshToken);
 
             response.sendRedirect("http://3.39.52.110/"); // TODO: 하드 코딩 제거
         };
@@ -146,5 +143,10 @@ public class SecurityConfig {
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
         return cookie;
+    }
+
+    private void addCookies(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
+        response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
     }
 }
