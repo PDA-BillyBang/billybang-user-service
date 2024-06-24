@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TokenService {
 
-    // 서버가 구동되면 SECRET_KEY 는 매번 초기화한다
-    private final String SECRET_KEY = UUID.randomUUID().toString();
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
     // User 에 대한 변경사항이 있을 경우 해당 코드가 변경되고 이를 기반으로 기존 유저의 수정이 발생했을때 토큰을 무효화한다
     private final Map<String, Integer> USER_CODE = new HashMap<>();
     private final UserService userService;
@@ -63,12 +64,12 @@ public class TokenService {
     }
 
     public String genAccessTokenByRefreshToken(String refreshToken) {
-        Claims claims = validateToken(refreshToken);
+        Claims claims = getClaims(refreshToken);
         String username = claims.getSubject();
         return genAccessTokenByEmail(username);
     }
 
-    public Claims validateToken(String jwtToken) {
+    public Claims getClaims(String jwtToken) {
         return Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 
@@ -83,7 +84,7 @@ public class TokenService {
         if (accessTokenCookie == null) return false;
 
         try {
-            validateToken(accessTokenCookie.getValue());
+            getClaims(accessTokenCookie.getValue());
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;

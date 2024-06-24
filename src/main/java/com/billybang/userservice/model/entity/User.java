@@ -1,6 +1,5 @@
 package com.billybang.userservice.model.entity;
 
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.type.SignUpType;
 import com.billybang.userservice.model.vo.BaseTime;
 import jakarta.persistence.*;

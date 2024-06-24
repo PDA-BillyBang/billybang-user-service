@@ -55,6 +55,11 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional(readOnly = true)
+    public Boolean validateDuplicateNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     @Transactional
     public User signUp(SignUpRequestDto dto) {
         try {
@@ -79,6 +84,13 @@ public class UserService {
         return userInfo;
     }
 
+    @Transactional(readOnly = true)
+    public UserInfo getUserInfo() {
+        Long userId = getLoginUserId();
+        return userInfoRepository.findByUserId(userId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user info"));
+    }
+
     @Transactional
     public User login(LoginRequestDto dto) {
         User user = getUserByEmail(dto.getEmail());
@@ -92,7 +104,12 @@ public class UserService {
     public void updateUserPassword(String password) {
         Long userId = getLoginUserId();
         User user = getUserById(userId);
-        user.updatePassword(passwordEncoder.encode(password));
+
+        String encodedPassword = passwordEncoder.encode(password);
+        if (user.getPassword().equals(encodedPassword)) {
+            throw new CommonException(BError.MATCHES, "previous password", "new password");
+        }
+        user.updatePassword(encodedPassword);
     }
 
     @Transactional
@@ -114,6 +131,13 @@ public class UserService {
                     return userInfo;
                 })
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "user info"));
+    }
+
+    @Transactional
+    public void deleteUser() {
+        Long userId = getLoginUserId();
+        User user = getUserById(userId);
+        userRepository.delete(user);
     }
 
     @Transactional

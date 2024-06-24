@@ -1,7 +1,8 @@
 package com.billybang.userservice.config;
 
+import com.billybang.userservice.exception.AccessDeniedHandlerImpl;
+import com.billybang.userservice.exception.AuthenticationExceptionHandler;
 import com.billybang.userservice.filter.TokenFilter;
-import com.billybang.userservice.security.exception.AuthenticationExceptionHandler;
 import com.billybang.userservice.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,9 +48,7 @@ public class SecurityConfig {
             antMatcher("/index.html"),
             antMatcher("/error"),
             antMatcher("/favicon.ico"),
-            antMatcher("/actuator/**"),
-            antMatcher(HttpMethod.GET, "/users/validate-email"),
-            antMatcher(HttpMethod.GET, "/users/validate-token")
+            antMatcher("/actuator/**")
     };
 
     private final TokenFilter tokenFilter;
@@ -66,7 +65,9 @@ public class SecurityConfig {
                                 antMatcher("/**/token"),
                                 antMatcher("/**/login"),
                                 antMatcher("/**/sign-up"),
-                                antMatcher("/**/oauth/**"))
+                                antMatcher("/**/oauth/**"),
+                                antMatcher(HttpMethod.GET, "/users/validate-email"),
+                                antMatcher(HttpMethod.GET, "/users/validate-token"))
                         .permitAll()
                         .requestMatchers(AUTH_WHITELIST)
                         .permitAll()
@@ -75,9 +76,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(new AuthenticationExceptionHandler()))
+                        .authenticationEntryPoint(new AuthenticationExceptionHandler())
+                        .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                )
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
@@ -88,7 +92,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
                         .logoutSuccessHandler(onLogoutSuccess())
-                        .deleteCookies(ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME))
+                        .deleteCookies(ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME)
+                )
                 .build();
     }
 
@@ -111,11 +116,8 @@ public class SecurityConfig {
 
             String accessToken = tokenService.genAccessTokenByEmail(principal.getAttribute("email"));
             String refreshToken = tokenService.genRefreshTokenByEmail(principal.getAttribute("email"));
-            String userId = Objects.requireNonNull(principal.getAttribute(USER_ID));
 
-            response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
-            response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
-            response.addCookie(createCookie(USER_ID, userId, ACCESS_TOKEN_MAX_AGE / 1000));
+            addCookies(response, accessToken, refreshToken);
 
             response.sendRedirect("http://3.39.52.110/"); // TODO: 하드 코딩 제거
         };
@@ -129,10 +131,10 @@ public class SecurityConfig {
         };
     }
 
-    private LogoutSuccessHandler onLogoutSuccess() {
-        return (request, response, authentication) -> {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        };
+    @Bean
+    public LogoutSuccessHandler onLogoutSuccess() {
+        return (request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
     }
 
     private Cookie createCookie(String cookieName, String cookieValue, long maxAge) {
@@ -141,5 +143,10 @@ public class SecurityConfig {
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
         return cookie;
+    }
+
+    private void addCookies(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.addCookie(createCookie(ACCESS_TOKEN_NAME, accessToken, ACCESS_TOKEN_MAX_AGE / 1000));
+        response.addCookie(createCookie(REFRESH_TOKEN_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE / 1000));
     }
 }

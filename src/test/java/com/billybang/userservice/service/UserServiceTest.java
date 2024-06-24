@@ -2,7 +2,6 @@ package com.billybang.userservice.service;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.entity.User;
 import com.billybang.userservice.model.type.CompanySize;

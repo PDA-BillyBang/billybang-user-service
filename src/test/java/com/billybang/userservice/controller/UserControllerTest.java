@@ -2,13 +2,11 @@ package com.billybang.userservice.controller;
 
 import com.billybang.userservice.model.dto.request.LoginRequestDto;
 import com.billybang.userservice.model.dto.request.SignUpRequestDto;
-import com.billybang.userservice.model.dto.request.UpdateUserRequestDto;
 import com.billybang.userservice.model.dto.request.UserInfoRequestDto;
 import com.billybang.userservice.model.type.CompanySize;
 import com.billybang.userservice.model.type.Occupation;
 import com.billybang.userservice.security.AuthConstant;
 import com.billybang.userservice.security.jwt.JWTConstant;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.Cookie;
@@ -135,7 +133,25 @@ class UserControllerTest {
     @Test
     @Transactional
     @DisplayName("회원정보 수정 테스트")
-    void update() throws Exception {
+    void updateUserInfo() throws Exception {
+
+        LoginRequestDto loginRequestDto = LoginRequestDto.builder()
+                .email(AuthConstant.ADMIN_USER)
+                .password(AuthConstant.ADMIN_PWD)
+                .build();
+
+        String loginRequest = objectMapper.writeValueAsString(loginRequestDto);
+
+        MockHttpServletResponse loginResponse = Objects.requireNonNull(
+                mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+                                .contentType("application/json")
+                                .content(loginRequest))
+                        .andExpect(status().isOk())
+                        .andReturn().getResponse());
+        String accessToken = Objects.requireNonNull(loginResponse.getCookie(JWTConstant.ACCESS_TOKEN_NAME)).getValue();
+        String refreshToken = Objects.requireNonNull(loginResponse.getCookie(JWTConstant.REFRESH_TOKEN_NAME)).getValue();
+        String userId = Objects.requireNonNull(loginResponse.getCookie(AuthConstant.USER_ID)).getValue();
+
         UserInfoRequestDto userInfoRequestDto = UserInfoRequestDto.builder()
                 .occupation(Occupation.GENERAL)
                 .companySize(CompanySize.LARGE)
@@ -150,24 +166,45 @@ class UserControllerTest {
                 .hasOtherLoans(false)
                 .build();
 
-        UpdateUserRequestDto updateUserRequestDto = UpdateUserRequestDto.builder()
-                .nickname("test")
-                .userInfo(userInfoRequestDto)
+        String userInfoRequest = objectMapper.writeValueAsString(userInfoRequestDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/user-info")
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken))
+                        .cookie(new Cookie(JWTConstant.REFRESH_TOKEN_NAME, refreshToken))
+                        .cookie(new Cookie(AuthConstant.USER_ID, userId))
+                        .contentType("application/json")
+                        .content(userInfoRequest));
+
+        UserInfoRequestDto updateDto = UserInfoRequestDto.builder()
+                .occupation(Occupation.FINANCE)
+                .companySize(CompanySize.LARGE)
+                .employmentDuration(24)
+                .individualIncome(3000)
+                .totalMarriedIncome(5000)
+                .childrenCount(1)
+                .isForeign(false)
+                .isFirstHouseBuyer(true)
+                .isMarried(true)
+                .yearOfMarriage(2010)
+                .hasOtherLoans(false)
                 .build();
 
-        String request = objectMapper.writeValueAsString(updateUserRequestDto);
+        String updateRequest = objectMapper.writeValueAsString(updateDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/{userId}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/user-info", 1)
+                        .cookie(new Cookie(JWTConstant.ACCESS_TOKEN_NAME, accessToken))
+                        .cookie(new Cookie(JWTConstant.REFRESH_TOKEN_NAME, refreshToken))
+                        .cookie(new Cookie(AuthConstant.USER_ID, userId))
                         .contentType("application/json")
-                        .content(request))
+                        .content(updateRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value(updateUserRequestDto.getNickname()))
+                .andExpect(jsonPath("$.response.occupation").value(updateDto.getOccupation().name()))
                 .andDo(print());
 
     }
 
     @Test
-    @DisplayName("로그인 후 회원 추가 정보 등록 API 테스트")
+    @DisplayName("로그인 후 추가 정보 등록 API 테스트")
     void addUserInfo() throws Exception {
         LoginRequestDto loginRequestDto = LoginRequestDto.builder()
                 .email(AuthConstant.ADMIN_USER)
