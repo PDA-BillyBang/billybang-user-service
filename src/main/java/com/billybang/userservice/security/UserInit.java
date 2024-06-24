@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Profile({"local", "local-cloud", "test", "dev"})
+@Profile({"local", "local-cloud", "test"})
 @Component
 @RequiredArgsConstructor
 public class UserInit {
