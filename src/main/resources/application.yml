@@ -22,8 +22,3 @@ management:
     web:
       exposure:
         include: refresh, health, beans, busrefresh
-      cors:
-        allowed-origins: "*"
-        allowed-methods: "*"
-        allowed-headers: "*"
-        allow-credentials: true

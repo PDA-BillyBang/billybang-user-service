@@ -100,7 +100,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://billybang.me"));
+        configuration.setAllowedOriginPatterns(List.of("http://www.billybang.me"));
         configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -119,7 +119,7 @@ public class SecurityConfig {
 
             addCookies(response, accessToken, refreshToken);
 
-            response.sendRedirect("http://3.39.52.110/"); // TODO: 하드 코딩 제거
+            response.sendRedirect("http://www.billybang.me/"); // TODO: 하드 코딩 제거
         };
     }
 
