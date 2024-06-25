@@ -142,6 +142,9 @@ public class SecurityConfig {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
+        cookie.setSecure(true);
+        cookie.setDomain("www.billybang.me");
+        cookie.setAttribute("SameSite", "None");
         return cookie;
     }
 
