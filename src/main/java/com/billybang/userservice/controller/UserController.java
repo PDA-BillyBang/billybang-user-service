@@ -137,8 +137,8 @@ public class UserController implements UserApi {
                 .httpOnly(true)
                 .path("/")
                 .maxAge(maxAge)
+                .domain("www.billybang.me")
 //                .secure(true)
-//                .domain("www.billybang.me")
 //                .sameSite("None")
                 .build();
     }
