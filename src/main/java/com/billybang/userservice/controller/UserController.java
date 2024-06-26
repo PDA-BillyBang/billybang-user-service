@@ -134,7 +134,7 @@ public class UserController implements UserApi {
 
     private ResponseCookie createCookie(String cookieName, String cookieValue, long maxAge) {
         return ResponseCookie.from(cookieName, cookieValue)
-                .httpOnly(true)
+                .httpOnly(false)
                 .path("/")
                 .maxAge(maxAge)
 //                .domain("billybang.me")

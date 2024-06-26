@@ -135,7 +135,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private Cookie createCookie(String cookieName, String cookieValue, long maxAge) {
         Cookie cookie = new Cookie(cookieName, cookieValue);
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
 //        cookie.setDomain("billybang.me");
