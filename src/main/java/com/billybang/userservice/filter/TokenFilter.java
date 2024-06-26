@@ -138,7 +138,7 @@ public class TokenFilter extends OncePerRequestFilter {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
-        cookie.setDomain("www.billybang.me");
+        cookie.setDomain("billybang.me");
         return cookie;
     }
 
