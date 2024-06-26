@@ -29,7 +29,7 @@ public class User extends BaseTime {
 
     private LocalDate birthDate;
 
-    @Column(unique = true)
+    @Column
     private String nickname;
 
     @OneToOne(mappedBy = "user")
